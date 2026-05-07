@@ -1,0 +1,334 @@
+# AgentGameClient —— AI Agent Galgame 引擎
+
+基于 C++17 + SFML 3.0 的轻量级 Galgame 引擎，支持多级分支剧情、多人物立绘动画、语音/背景音乐、存档/继续、旅途重温等功能。所有剧情数据均以 JSON 文件定义，无需重新编译即可热更新。建议搭配AgentGameServer使用。
+
+---
+
+## 目录结构
+
+```
+AgentGame/
+├── CMakeLists.txt              # CMake 构建配置（SFML 3.0 自动下载）
+├── src/
+│   ├── engine.h                # 引擎头文件
+│   ├── engine.cpp              # 引擎实现
+│   └── main.cpp                # 程序入口（设置 game_root）
+│
+├── third_party/
+│   └── nlohmann/json.hpp       # JSON 解析库（单头文件）
+│
+├── G0/                         # 游戏根目录（示例：樱花物语）
+│   ├── G0.json                 # 开场场景（含 game_title 字段）
+│   ├── all_story.json          # 自动生成的存档文件
+│   ├── image-back/             # 背景图目录
+│   │   ├── images.json         # 背景图名称与 AI 提示词
+│   │   └── *.jpg / *.png       # 背景图文件
+│   ├── image-person/           # 人物立绘目录
+│   │   ├── images.json         # 立绘名称与 AI 提示词
+│   │   └── *.jpg / *.png       # 立绘文件
+│   ├── audio-back/             # 背景音乐目录
+│   │   └── *.mp3 / *.ogg       # 背景音乐文件
+│   ├── audio-person/           # 人声音频目录
+│   │   └── *.wav / *.mp3       # 人声文件
+│   ├── C0/                     # 选项 0 分支
+│   │   ├── C0.json
+│   │   ├── C0C0/               # 子选项 0
+│   │   └── C0C1/               # 子选项 1
+│   ├── C1/                     # 选项 1 分支
+│   └── C2/                     # 选项 2 分支
+│
+└── G0-example/                 # 示例游戏目录（展示所有功能）
+    ├── G0-example.json         # 示例开场场景
+    ├── S0A/                    # 选项 A 分支
+    │   └── S0A.json
+    ├── S0B/                    # 选项 B 分支
+    │   └── S0B.json
+    ├── image-back/
+    │   └── images.json
+    ├── image-person/
+    │   └── images.json
+    ├── audio-back/             # 背景音乐（放置 .mp3/.ogg 文件）
+    └── audio-person/           # 人声音频（放置 .wav/.mp3 文件）
+```
+
+> **注意**：`image-back/`、`image-person/`、`audio-back/`、`audio-person/` 均位于游戏根目录（如 `G0/`）内部，与该游戏绑定。
+
+---
+
+## 场景 JSON 格式（完整版）
+
+每个选项目录下有一个与目录同名的 `.json` 文件：
+
+```json
+{
+  "game_title": "游戏标题（仅根最外层 JSON 需要）",
+  "game_subtitle": "副标题（显示在标题下方，可留空）",
+  "title_background": "G0/image-back/bg_title.png（标题界面背景图，可留空）",
+  "title_background_prompt": "标题界面背景图AI 提示词，可留空",
+  "title": "场景标题",
+  "dialogues": [
+    {
+      "character": "角色名（空字符串表示旁白）",
+      "text": "对话文本",
+
+      "background": "G0/image-back/bg_xxx.png",
+      "background_prompt": "若图片未生成，填写 AI 提示词；已生成则留空",
+
+      "character_image": "G0/image-person/char_xxx.png",
+      "character_image_prompt": "若图片未生成，填写 AI 提示词；已生成则留空",
+
+      "characters": [
+        {
+          "image": "G0/image-person/char_a.png",
+          "image_prompt": "AI 提示词（图片已存在则留空）",
+          "motion": "still"
+        },
+        {
+          "image": "G0/image-person/char_b.png",
+          "image_prompt": "",
+          "motion": "bounce"
+        }
+      ],
+
+      "voice": "G0/audio-person/voice_xxx.wav",
+      "background_music": "G0/audio-back/bgm_xxx.mp3"
+    }
+  ],
+  "choices": [
+    {
+      "text": "选项显示文本",
+      "dir": "对应子目录名"
+    }
+  ]
+  "ending_background": "结束界面背景图，可留空，仅choices为空的 JSON 需要",
+  "ending_background_prompt": "结束界面背景图AI 提示词，可留空，仅choices为空的 JSON 需要"
+}
+```
+
+### 字段说明
+
+| 字段 | 必填 | 说明 |
+|------|------|------|
+| `character` | ✓ | 说话角色名，空字符串表示旁白 |
+| `text` | ✓ | 对话文本 |
+| `background` | 二选一 | 背景图路径（相对于可执行文件目录） |
+| `background_prompt` | 二选一 | 背景图 AI 生成提示词（图片未生成时填写） |
+| `character_image` | 可选 | 单人物立绘路径（旧格式，向后兼容） |
+| `character_image_prompt` | 可选 | 单人物立绘 AI 提示词（旧格式） |
+| `characters` | 可选 | **多人物立绘数组**（新格式，优先于 character_image） |
+| `voice` | 可选 | 人声音频路径（不循环，对话结束自动停止） |
+| `background_music` | 可选 | 背景音乐路径（循环播放） |
+
+- `choices` 为空数组时，该场景为结局，游戏结束后返回标题界面。
+- 若某段对话未指定 `characters` 也未指定 `character_image`，保持上一段的立绘不变。
+- 若某段对话未指定 `background`，保持上一段的背景不变。
+
+---
+
+## 多人物立绘与动画
+
+`characters` 数组支持同时显示多个人物，每个人物可独立设置动画：
+
+```json
+"characters": [
+  { "image": "G0/image-person/char_a.png", "image_prompt": "", "motion": "still" },
+  { "image": "G0/image-person/char_b.png", "image_prompt": "", "motion": "bounce" }
+]
+```
+
+### 动画类型（motion）
+
+| 值 | 效果 | 说明 |
+|----|------|------|
+| `still` | 静止 | 默认，不做任何动作 |
+| `flip` | 水平翻转 | 静态镜像，以立绘中心 x 为轴 |
+| `bounce` | 上下跳动 | 快速跳 3 下后回原位（1 秒内完成） |
+| `move_left` | 向左移动 | 向左移动 90px 后回原位（1 秒内完成） |
+| `move_right` | 向右移动 | 向右移动 90px 后回原位（1 秒内完成） |
+
+**布局规则**：N 个人物均匀分布在屏幕水平方向，位置为 `WIN_W × (i+1)/(N+1)`。
+
+---
+
+## 背景音乐规则
+
+| 情况 | 行为 |
+|------|------|
+| 连续多段对话设置**相同** BGM 路径 | 循环播放，不重启（无缝衔接） |
+| 对话设置**不同** BGM 路径 | 停止当前，从头播放新 BGM |
+| 对话 `background_music` 为空 | 停止当前 BGM |
+| BGM 文件尚未生成（热重载） | 停止当前，等下一段对话重试 |
+
+---
+
+## 热重载
+
+引擎在每次渲染帧时检查文件修改时间（mtime），支持以下热更新：
+
+| 资源类型 | 热重载行为 |
+|----------|-----------|
+| 背景图 / 立绘 | 文件替换后下一帧自动加载新版本 |
+| 人声音频 | 文件出现后下一段对话自动播放 |
+| 背景音乐 | 文件出现后下一段对话自动播放 |
+| 场景 JSON | 每次进入场景时重新读取 |
+
+---
+
+## 存档系统
+
+游戏进度自动保存到 `<game_root>/all_story.json`，记录完整的剧情历史和当前位置。
+
+### all_story.json 格式
+
+```json
+{
+  "game_title": "游戏标题",
+  "current_scene": "G0/C0/C0C0",
+  "story": [
+    { "type": "scene", "scene_dir": "G0", "title": "...", "dialogues": [...] },
+    { "type": "choice", "text": "走向喷泉广场...", "dir": "C0" },
+    { "type": "scene", "scene_dir": "G0/C0", "title": "...", "dialogues": [...] }
+  ]
+}
+```
+
+---
+
+## 标题界面
+
+启动后显示标题界面，包含 4 个菜单项：
+
+| 按钮 | 可用条件 | 功能 |
+|------|---------|------|
+| 继续游戏 | 有存档 | 从上次保存的位置继续 |
+| 旅途重温 | 有存档 | 回顾已走过的全部剧情 |
+| 新游戏 | 始终 | 删除存档，从头开始 |
+| 退出游戏 | 始终 | 关闭程序 |
+
+支持鼠标点击、↑↓ 方向键导航 + Enter 确认。
+
+---
+
+## 旅途重温
+
+从 `all_story.json` 加载完整剧情历史，以与游玩时相同的界面回顾全过程。
+
+| 操作 | 效果 |
+|------|------|
+| → / Enter / 鼠标左键 | 前进到下一条目（含选项条目） |
+| ← | 回退到**前一对话**（自动跳过选项条目） |
+| Esc | 退出回顾，返回标题界面 |
+
+- 遇到选项时，以 `【选择】` 为角色名显示当时选择的选项文本。
+- 顶部显示进度提示：`旅途重温 [x/n]  ← 回退  → 继续  Esc 退出`
+
+---
+
+## 图片目录 JSON 格式
+
+`image-back/images.json` 和 `image-person/images.json` 用于管理图片资产：
+
+```json
+{
+  "images": [
+    {
+      "name": "bg_park.png",
+      "prompt": "anime style, peaceful park, cherry blossom trees, spring afternoon"
+    }
+  ]
+}
+```
+
+---
+
+## 构建方法
+
+### 前置条件
+
+- 思源字体（非常重要）
+- CMake 3.14+
+- C++17 兼容编译器（MSVC 2019+、GCC 12+、Clang 14+）
+- Git（FetchContent 自动下载 SFML 3.0）
+- 网络连接（首次构建时下载 SFML 及其依赖，约需 10-30 分钟）
+
+### Windows（MSVC / Visual Studio 2022）
+
+```bat
+mkdir build && cd build
+cmake .. -G "Visual Studio 17 2022" -A x64
+cmake --build . --config Release
+```
+
+### Windows（MinGW GCC 12，推荐 UCRT 版本）
+
+```bat
+mkdir build && cd build
+cmake .. -G "MinGW Makefiles" -DCMAKE_BUILD_TYPE=Release
+cmake --build . -j4
+```
+
+> 推荐使用 [winlibs.com](https://winlibs.com/) 的 GCC 12.x UCRT 版本。GCC 13+ 与 SFML 3.0 存在兼容问题。
+
+### 复用已下载的 SFML 源码（避免重复下载）
+
+```bat
+cmake .. -G "MinGW Makefiles" -DCMAKE_BUILD_TYPE=Release ^
+  -DFETCHCONTENT_SOURCE_DIR_SFML="..\build\_deps\sfml-src"
+```
+
+---
+
+## 运行方法
+
+编译完成后，可执行文件位于 `build/Release/galgame.exe`，游戏数据已自动复制到同目录：
+
+```
+build/Release/
+  galgame.exe
+  G0/
+    G0.json
+    C0/ C1/ C2/
+    image-back/
+    image-person/
+    audio-back/
+    audio-person/
+```
+
+直接运行：
+
+```bat
+cd build\Release
+galgame.exe
+```
+
+---
+
+## 切换游戏根目录
+
+修改 `src/main.cpp` 中的 `game_root` 变量：
+
+```cpp
+// 使用示例游戏
+GalGameEngine engine("G0-example");
+engine.run();
+
+// 使用正式游戏
+GalGameEngine engine("G0");
+engine.run();
+```
+
+---
+
+## 扩展说明
+
+| 操作 | 方法 |
+|------|------|
+| 新增场景 | 在对应目录下创建子目录，添加同名 `.json` 文件 |
+| 新增选项 | 在父场景 JSON 的 `choices` 数组中添加条目，创建对应子目录 |
+| 添加背景图 | 将图片放入 `<game_root>/image-back/`，在 JSON 中填写路径 |
+| 添加立绘 | 将图片放入 `<game_root>/image-person/`，在 JSON 中填写路径 |
+| 添加人声 | 将音频放入 `<game_root>/audio-person/`，在 JSON 的 `voice` 字段填写路径 |
+| 添加背景音乐 | 将音频放入 `<game_root>/audio-back/`，在 JSON 的 `background_music` 字段填写路径 |
+| 多人物同台 | 使用 `characters` 数组替代 `character_image` 字段 |
+| 立绘动画 | 在 `characters` 条目中设置 `motion` 字段 |
+| 热更新资源 | 直接替换文件，引擎下一帧自动检测并加载 |

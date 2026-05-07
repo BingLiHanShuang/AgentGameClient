@@ -1,0 +1,16 @@
+{
+  "images": [
+    {
+      "name": "char_sakura_happy.jpg",
+      "prompt": ""
+    },
+    {
+      "name": "char_sakura_blush.png",
+      "prompt": "anime style, cute girl named Sakura, long pink hair, blushing red cheeks, shy expression, school uniform with red ribbon, standing pose, transparent background, high quality"
+    },
+    {
+      "name": "char_sakura_sad.png",
+      "prompt": "anime style, cute girl named Sakura, long pink hair, sad downcast eyes, slightly teary, school uniform with red ribbon, standing pose, transparent background, high quality"
+    }
+  ]
+}

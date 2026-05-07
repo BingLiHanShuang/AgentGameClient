@@ -1,0 +1,81 @@
+{
+  "title": "再次相约",
+  "dialogues": [
+    {
+      "character": "樱花",
+      "text": "（惊喜地抬头）啊！你也来了！……是特意来的吗？",
+      "background": "G0/image-back/bg_library.png",
+      "background_prompt": "",
+      "character_image": "G0/image-person/char_sakura_happy.jpg",
+      "character_image_prompt": "",
+      "voice": "",
+      "background_music": ""
+    },
+    {
+      "character": "你",
+      "text": "嗯……昨天你说你在写诗，我有点好奇。",
+      "background": "G0/image-back/bg_library.png",
+      "background_prompt": "",
+      "character_image": "G0/image-person/char_sakura_happy.jpg",
+      "character_image_prompt": "",
+      "voice": "",
+      "background_music": ""
+    },
+    {
+      "character": "樱花",
+      "text": "（脸微微泛红，把笔记本往胸前抱了抱）那个……其实昨晚我写完了一首，但是……",
+      "background": "G0/image-back/bg_library.png",
+      "background_prompt": "",
+      "character_image": "G0/image-person/char_sakura_happy.jpg",
+      "character_image_prompt": "",
+      "voice": "",
+      "background_music": ""
+    },
+    {
+      "character": "你",
+      "text": "能让我看看吗？",
+      "background": "G0/image-back/bg_library.png",
+      "background_prompt": "",
+      "character_image": "G0/image-person/char_sakura_happy.jpg",
+      "character_image_prompt": "",
+      "voice": "",
+      "background_music": ""
+    },
+    {
+      "character": "旁白",
+      "text": "沉默了片刻，樱花缓缓把笔记本递了过来。那首诗的题目是——《初遇》。",
+      "background": "G0/image-back/bg_library.png",
+      "background_prompt": "",
+      "character_image": "G0/image-person/char_sakura_happy.jpg",
+      "character_image_prompt": "",
+      "voice": "",
+      "background_music": ""
+    },
+    {
+      "character": "旁白",
+      "text": "「春风送来陌生的脚步，樱花落在未知的肩头。不知从何时起，心里多了一抹粉色。」",
+      "background": "G0/image-back/bg_library.png",
+      "background_prompt": "",
+      "character_image": "G0/image-person/char_sakura_happy.jpg",
+      "character_image_prompt": "",
+      "voice": "",
+      "background_music": ""
+    },
+    {
+      "character": "旁白",
+      "text": "你抬起头，对上了樱花期待又紧张的眼神。这一刻，你心里有什么东西悄悄松动了……",
+      "background": "G0/image-back/bg_library.png",
+      "background_prompt": "",
+      "character_image": "G0/image-person/char_sakura_happy.jpg",
+      "character_image_prompt": "",
+      "voice": "",
+      "background_music": ""
+    }
+  ],
+  "choices": [
+    {
+      "text": "「这首诗……写的是我吗？」",
+      "dir": "C0C0C0C0C0"
+    }
+  ]
+}

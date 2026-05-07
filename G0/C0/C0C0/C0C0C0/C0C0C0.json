@@ -1,0 +1,61 @@
+{
+  "title": "图书馆的下午",
+  "dialogues": [
+    {
+      "character": "樱花",
+      "text": "图书馆？好啊！那里有好多关于这所学校历史的书，我最喜欢去了！",
+      "background": "G0/image-back/bg_library.png",
+      "background_prompt": "anime style, school library interior, tall bookshelves, warm lighting, quiet atmosphere, wooden tables, window with cherry blossom view, detailed background, high quality",
+      "character_image": "G0/image-person/char_sakura_happy.jpg",
+      "character_image_prompt": "",
+      "voice": "",
+      "background_music": ""
+    },
+    {
+      "character": "旁白",
+      "text": "午休时间，你们来到了图书馆。阳光透过高大的书架间隙洒落，空气中弥漫着书香。",
+      "background": "G0/image-back/bg_library.png",
+      "background_prompt": "",
+      "character_image": "G0/image-person/char_sakura_happy.jpg",
+      "character_image_prompt": "",
+      "voice": "",
+      "background_music": ""
+    },
+    {
+      "character": "樱花",
+      "text": "我最喜欢看诗集！特别是描写四季的那种……（小声）其实我自己也在写……",
+      "background": "G0/image-back/bg_library.png",
+      "background_prompt": "",
+      "character_image": "G0/image-person/char_sakura_happy.jpg",
+      "character_image_prompt": "",
+      "voice": "",
+      "background_music": ""
+    },
+    {
+      "character": "旁白",
+      "text": "离开时，樱花在你的笔记本扉页上写下了一行字——「春日相逢，愿此后岁月皆如樱花般美好。」",
+      "background": "G0/image-back/bg_library.png",
+      "background_prompt": "",
+      "character_image": "G0/image-person/char_sakura_happy.jpg",
+      "character_image_prompt": "",
+      "voice": "",
+      "background_music": ""
+    },
+    {
+      "character": "旁白",
+      "text": "第二天，你发现自己不由自主地又走向了图书馆……",
+      "background": "G0/image-back/bg_library.png",
+      "background_prompt": "",
+      "character_image": "",
+      "character_image_prompt": "",
+      "voice": "",
+      "background_music": ""
+    }
+  ],
+  "choices": [
+    {
+      "text": "「樱花，你今天也在这里啊。」",
+      "dir": "C0C0C0C0"
+    }
+  ]
+}
