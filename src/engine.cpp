@@ -260,6 +260,7 @@ std::vector<sf::String> GalGameEngine::wrapText(const std::string& u8, unsigned 
 
 // ── 绘制：对话框 ──────────────────────────────────────────────────────────────
 void GalGameEngine::drawDialogueBox(const std::string& character, const std::string& text) {
+    if (!dialog_visible_) return;  // 隐藏对话框，不绘制任何内容
     sf::RectangleShape panel({(float)WIN_W, (float)DLGBOX_H});
     panel.setPosition({0.f, (float)DLGBOX_Y});
     panel.setFillColor(sf::Color(0, 0, 0, 210)); window_.draw(panel);
@@ -555,6 +556,7 @@ void GalGameEngine::runEndingScreen(const std::string& bg) {
 
 // ── 旅途重温 ──────────────────────────────────────────────────────────────────
 void GalGameEngine::runReviewMode() {
+    dialog_visible_ = true;
     if (!fs::exists(story_file_)) return;
     std::ifstream ifs0(story_file_);
     json j;
@@ -622,17 +624,32 @@ void GalGameEngine::runReviewMode() {
             while (const auto event = window_.pollEvent()) {
                 if (event->is<sf::Event::Closed>()) { window_.close(); return; }
                 if (const auto* key = event->getIf<sf::Event::KeyPressed>()) {
-                    if (key->code == sf::Keyboard::Key::Right ||
-                        key->code == sf::Keyboard::Key::Enter ||
-                        key->code == sf::Keyboard::Key::Space) advance = true;
-                    if (key->code == sf::Keyboard::Key::Left)  go_back = true;
+                    // 空格键始终切换对话框显示/隐藏
+                    if (key->code == sf::Keyboard::Key::Space) {
+                        dialog_visible_ = !dialog_visible_;
+                        continue;
+                    }
+                    // 只有在对话框可见时，才允许前进（Right / Enter）或后退（Left）
+                    if (dialog_visible_) {
+                        if (key->code == sf::Keyboard::Key::Right || key->code == sf::Keyboard::Key::Enter) {
+                            advance = true;
+                        }
+                        if (key->code == sf::Keyboard::Key::Left) {
+                            go_back = true;
+                        }
+                    }
                     if (key->code == sf::Keyboard::Key::Escape) {
                         if (current_sound_) current_sound_->stop();
-                        current_bgm_.stop(); current_bgm_path_.clear(); return;
+                        current_bgm_.stop(); current_bgm_path_.clear();
+                        return;
                     }
                 }
-                if (const auto* mb = event->getIf<sf::Event::MouseButtonPressed>())
-                    if (mb->button == sf::Mouse::Button::Left) advance = true;
+                if (const auto* mb = event->getIf<sf::Event::MouseButtonPressed>()) {
+                    // 只有在对话框可见时，鼠标左键才能推进对话
+                    if (dialog_visible_ && mb->button == sf::Mouse::Button::Left) {
+                        advance = true;
+                    }
+                }
             }
             window_.clear();
             drawBackground(item.bg);
@@ -649,7 +666,8 @@ void GalGameEngine::runReviewMode() {
                     "  [" + std::to_string(idx+1) + "/" + std::to_string(total) + "]"
                     "    \xe2\x86\x90 \xe5\x9b\x9e\xe9\x80\x80"
                     "    \xe2\x86\x92 \xe7\xbb\xa7\xe7\xbb\xad"
-                    "    Esc \xe9\x80\x80\xe5\x87\xba";
+                    "    Esc \xe9\x80\x80\xe5\x87\xba"
+                    "    空格 \xe5\x88\x87\xe6\x8d\xa2\xe9\x9a\x90\xe8\x97\x8f/\xe6\x98\xbe\xe7\xa4\xba\xe5\xaf\xb9\xe8\xaf\x9d\xe6\xa1\x86";
                 sf::Text ht = makeText(hint, 18, sf::Color(200,200,200,200));
                 ht.setPosition({10.f, 8.f}); window_.draw(ht);
             }
@@ -716,6 +734,7 @@ Scene GalGameEngine::loadScene(const std::string& scene_dir) {
 
 // ── 播放场景（递归）──────────────────────────────────────────────────────────
 void GalGameEngine::playScene(const std::string& scene_dir) {
+    dialog_visible_ = true;  // 每次场景开始时确保对话框可见
     if (!window_.isOpen()) return;
     Scene scene = loadScene(scene_dir);
     if (scene_dir == game_root_) {
@@ -738,11 +757,23 @@ void GalGameEngine::playScene(const std::string& scene_dir) {
         while (window_.isOpen() && !advance) {
             while (const auto event = window_.pollEvent()) {
                 if (event->is<sf::Event::Closed>()) { window_.close(); return; }
-                if (const auto* key = event->getIf<sf::Event::KeyPressed>())
-                    if (key->code == sf::Keyboard::Key::Enter ||
-                        key->code == sf::Keyboard::Key::Space) advance = true;
-                if (const auto* mb = event->getIf<sf::Event::MouseButtonPressed>())
-                    if (mb->button == sf::Mouse::Button::Left) advance = true;
+                if (const auto* key = event->getIf<sf::Event::KeyPressed>()) {
+                    // 空格键始终切换对话框显示/隐藏
+                    if (key->code == sf::Keyboard::Key::Space) {
+                        dialog_visible_ = !dialog_visible_;
+                        continue;  // 不推进对话
+                    }
+                    // 只有在对话框可见时，回车键才能推进对话
+                    if (dialog_visible_ && key->code == sf::Keyboard::Key::Enter) {
+                        advance = true;
+                    }
+                }
+                if (const auto* mb = event->getIf<sf::Event::MouseButtonPressed>()) {
+                    // 只有在对话框可见时，鼠标左键才能推进对话
+                    if (dialog_visible_ && mb->button == sf::Mouse::Button::Left) {
+                        advance = true;
+                    }
+                }
             }
             window_.clear();
             drawBackground(last_bg);

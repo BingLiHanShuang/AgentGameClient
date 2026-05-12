@@ -63,7 +63,7 @@
           "motion": "still"
         },
         {
-          "image": "G0/image-person/char_honey_happy.jpg",
+          "image": "G0/image-person/char_honey_happy.png",
           "image_prompt": "",
           "motion": "move_right"
         }
@@ -83,7 +83,7 @@
           "motion": "still"
         },
         {
-          "image": "G0/image-person/char_honey_happy.jpg",
+          "image": "G0/image-person/char_honey_happy.png",
           "image_prompt": "",
           "motion": "bounce"
         }
@@ -103,7 +103,7 @@
           "motion": "flip"
         },
         {
-          "image": "G0/image-person/char_honey_happy.jpg",
+          "image": "G0/image-person/char_honey_happy.png",
           "image_prompt": "",
           "motion": "still"
         }
@@ -123,7 +123,7 @@
           "motion": "still"
         },
         {
-          "image": "G0/image-person/char_honey_happy.jpg",
+          "image": "G0/image-person/char_honey_happy.png",
           "image_prompt": "",
           "motion": "bounce"
         }

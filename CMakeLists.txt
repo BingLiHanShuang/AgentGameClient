@@ -9,7 +9,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 #   Invoke-WebRequest -Uri "https://github.com/nlohmann/json/releases/download/v3.11.3/json.hpp" `
 #     -OutFile "third_party/nlohmann/json.hpp" -UseBasicParsing
 
-# ── SFML 2.6.1（图形界面库，通过 FetchContent 自动下载编译）──────────────
+# ── SFML 3.0.0（图形界面库，通过 FetchContent 自动下载编译）──────────────
 include(FetchContent)
 FetchContent_Declare(
     SFML

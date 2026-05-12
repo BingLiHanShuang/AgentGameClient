@@ -125,9 +125,12 @@ AgentGame/
 
 ---
 
+## 背景图片规则
+背景图片尺寸推荐wxh尺寸1280x720
+
 ## 多人物立绘与动画
 
-`characters` 数组支持同时显示多个人物，每个人物可独立设置动画：
+`characters` 数组支持同时显示多个人物，每个人物立绘推荐wxh尺寸384x512/288x512，每个人物可独立设置动画：
 
 ```json
 "characters": [
@@ -209,12 +212,13 @@ AgentGame/
 
 ---
 
-## 旅途重温
+## 播放场景 / 旅途重温
 
 从 `all_story.json` 加载完整剧情历史，以与游玩时相同的界面回顾全过程。
 
 | 操作 | 效果 |
 |------|------|
+| Space | 切换隐藏/显示对话框 |
 | → / Enter / 鼠标左键 | 前进到下一条目（含选项条目） |
 | ← | 回退到**前一对话**（自动跳过选项条目） |
 | Esc | 退出回顾，返回标题界面 |
@@ -259,7 +263,7 @@ cmake .. -G "Visual Studio 17 2022" -A x64
 cmake --build . --config Release
 ```
 
-### Windows（MinGW GCC 12，推荐 UCRT 版本）
+### Windows（MinGW GCC 12，推荐 UCRT 版本，cmake时dep下载慢可搜关键词FetchContent并在github链接前添加https://gh-proxy.org/）
 
 ```bat
 mkdir build && cd build
