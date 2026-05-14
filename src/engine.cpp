@@ -30,6 +30,7 @@ std::string GalGameEngine::loadGameTitle() {
     try { ifs >> j; } catch (...) { return "Galgame"; }
     game_subtitle_    = j.value("game_subtitle",    "");
     title_background_ = j.value("title_background", "");
+    game_summary_     = j.value("game_summary",     "");   // 新增
     return j.value("game_title", "Galgame");
 }
 
@@ -75,6 +76,7 @@ bool GalGameEngine::hasSaveFile() const { return fs::exists(story_file_); }
 void GalGameEngine::initNewStory() {
     story_data_ = json::object();
     story_data_["game_title"]    = game_title_;
+    story_data_["game_summary"]  = game_summary_;          // 新增
     story_data_["current_scene"] = game_root_;
     story_data_["story"]         = json::array();
     if (fs::exists(story_file_)) fs::remove(story_file_);
@@ -90,8 +92,6 @@ void GalGameEngine::appendSceneToStory(const Scene& scene, const std::string& di
         dj["text"]                   = d.text;
         dj["background"]             = d.background;
         dj["background_prompt"]      = d.background_prompt;
-        dj["character_image"]        = d.character_image;
-        dj["character_image_prompt"] = d.character_image_prompt;
         dj["voice"]                  = d.voice;
         dj["background_music"]       = d.background_music;
         json chars = json::array();
@@ -582,21 +582,25 @@ void GalGameEngine::runReviewMode() {
                 dlg.text                   = d.value("text", "");
                 dlg.background             = d.value("background", "");
                 dlg.background_prompt      = d.value("background_prompt", "");
-                dlg.character_image        = d.value("character_image", "");
-                dlg.character_image_prompt = d.value("character_image_prompt", "");
                 dlg.voice                  = d.value("voice", "");
                 dlg.background_music       = d.value("background_music", "");
                 for (const auto& c : d.value("characters", json::array())) {
                     CharacterEntry ce;
-                    ce.image = c.value("image",""); ce.image_prompt = c.value("image_prompt","");
+                    ce.image = c.value("image","");
+                    ce.image_prompt = c.value("image_prompt","");
                     ce.motion = c.value("motion","still");
                     dlg.characters.push_back(ce);
                 }
-                if (dlg.characters.empty() && !dlg.character_image.empty()) {
-                    CharacterEntry ce; ce.image = dlg.character_image;
-                    ce.image_prompt = dlg.character_image_prompt; ce.motion = "still";
+
+                // 兼容旧存档：自动转换旧格式的单角色字段
+                if (dlg.characters.empty() && d.contains("character_image")) {
+                    CharacterEntry ce;
+                    ce.image = d["character_image"].get<std::string>();
+                    ce.image_prompt = d.value("character_image_prompt", "");
+                    ce.motion = "still";
                     dlg.characters.push_back(ce);
                 }
+
                 if (!dlg.background.empty()) last_bg    = dlg.background;
                 if (!dlg.characters.empty()) last_chars = dlg.characters;
                 ReviewItem item; item.is_choice = false;
@@ -705,8 +709,6 @@ Scene GalGameEngine::loadScene(const std::string& scene_dir) {
         dlg.text                   = d.value("text", "");
         dlg.background             = d.value("background", "");
         dlg.background_prompt      = d.value("background_prompt", "");
-        dlg.character_image        = d.value("character_image", "");
-        dlg.character_image_prompt = d.value("character_image_prompt", "");
         dlg.voice                  = d.value("voice", "");
         dlg.background_music       = d.value("background_music", "");
         for (const auto& c : d.value("characters", json::array())) {
@@ -716,13 +718,16 @@ Scene GalGameEngine::loadScene(const std::string& scene_dir) {
             ce.motion       = c.value("motion", "still");
             dlg.characters.push_back(ce);
         }
-        if (dlg.characters.empty() && !dlg.character_image.empty()) {
+
+        // 保留向后兼容：自动转换旧格式的单角色字段
+        if (dlg.characters.empty() && d.contains("character_image")) {
             CharacterEntry ce;
-            ce.image        = dlg.character_image;
-            ce.image_prompt = dlg.character_image_prompt;
-            ce.motion       = "still";
+            ce.image = d["character_image"].get<std::string>();
+            ce.image_prompt = d.value("character_image_prompt", "");
+            ce.motion = "still";
             dlg.characters.push_back(ce);
         }
+
         scene.dialogues.push_back(std::move(dlg));
     }
     for (const auto& c : j.value("choices", json::array())) {

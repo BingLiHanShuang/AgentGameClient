@@ -6,50 +6,75 @@
       "text": "你走向喷泉广场，一个粉色头发的女生正坐在喷泉边看书，樱花花瓣轻轻落在她的发间。",
       "background": "G0/image-back/bg_fountain.jpg",
       "background_prompt": "",
-      "character_image": "G0/image-person/char_sakura_happy.jpg",
-      "character_image_prompt": "",
       "voice": "",
-      "background_music": ""
+      "background_music": "",
+      "characters": [
+        {
+          "image": "G0/image-person/char_sakura_happy.jpg",
+          "image_prompt": "",
+          "motion": "still"
+        }
+      ]
     },
     {
       "character": "旁白",
       "text": "感觉到有人靠近，她抬起头，露出了一个温柔的微笑。",
       "background": "G0/image-back/bg_fountain.jpg",
       "background_prompt": "",
-      "character_image": "G0/image-person/char_sakura_happy.jpg",
-      "character_image_prompt": "",
       "voice": "",
-      "background_music": ""
+      "background_music": "",
+      "characters": [
+        {
+          "image": "G0/image-person/char_sakura_happy.jpg",
+          "image_prompt": "",
+          "motion": "still"
+        }
+      ]
     },
     {
       "character": "樱花",
       "text": "啊，你是新来的转学生吧？我叫樱花，很高兴认识你！",
       "background": "G0/image-back/bg_fountain.jpg",
       "background_prompt": "",
-      "character_image": "G0/image-person/char_sakura_happy.jpg",
-      "character_image_prompt": "",
       "voice": "G0/audio-person/16bit_stereo_48KHz.wav",
-      "background_music": ""
+      "background_music": "",
+      "characters": [
+        {
+          "image": "G0/image-person/char_sakura_happy.jpg",
+          "image_prompt": "",
+          "motion": "still"
+        }
+      ]
     },
     {
       "character": "你",
       "text": "你好，我是新来的，请多关照。",
       "background": "G0/image-back/bg_fountain.jpg",
       "background_prompt": "",
-      "character_image": "G0/image-person/char_sakura_happy.jpg",
-      "character_image_prompt": "",
       "voice": "",
-      "background_music": ""
+      "background_music": "",
+      "characters": [
+        {
+          "image": "G0/image-person/char_sakura_happy.jpg",
+          "image_prompt": "",
+          "motion": "still"
+        }
+      ]
     },
     {
       "character": "樱花",
       "text": "这所学校很漂亮吧？特别是春天的时候，到处都是樱花，美极了！",
       "background": "G0/image-back/bg_fountain.jpg",
       "background_prompt": "",
-      "character_image": "G0/image-person/char_sakura_happy.jpg",
-      "character_image_prompt": "",
       "voice": "G0/audio-person/16bit_stereo_48KHz.wav",
-      "background_music": ""
+      "background_music": "",
+      "characters": [
+        {
+          "image": "G0/image-person/char_sakura_happy.jpg",
+          "image_prompt": "",
+          "motion": "still"
+        }
+      ]
     },
     {
       "character": "旁白",

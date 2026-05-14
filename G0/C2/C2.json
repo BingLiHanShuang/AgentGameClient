@@ -6,54 +6,84 @@
       "text": "你直接走向教室，坐在了靠窗的位置。窗外的樱花随风飘落，美不胜收。",
       "background": "image-back/bg_classroom.png",
       "background_prompt": "",
-      "character_image": "",
-      "character_image_prompt": "",
-      "voice": ""
+      "voice": "",
+      "characters": [
+        {
+          "image": "",
+          "image_prompt": "",
+          "motion": "still"
+        }
+      ]
     },
     {
       "character": "旁白",
       "text": "同学们陆续进入教室，好奇地打量着你这个新来的转学生。你微笑着回应他们的目光。",
       "background": "image-back/bg_classroom.png",
       "background_prompt": "",
-      "character_image": "",
-      "character_image_prompt": "",
-      "voice": ""
+      "voice": "",
+      "characters": [
+        {
+          "image": "",
+          "image_prompt": "",
+          "motion": "still"
+        }
+      ]
     },
     {
       "character": "旁白",
       "text": "上课铃声响起，老师走进教室，向大家介绍了你。你站起来，向全班同学鞠了一躬。",
       "background": "image-back/bg_classroom.png",
       "background_prompt": "",
-      "character_image": "",
-      "character_image_prompt": "",
-      "voice": ""
+      "voice": "",
+      "characters": [
+        {
+          "image": "",
+          "image_prompt": "",
+          "motion": "still"
+        }
+      ]
     },
     {
       "character": "你",
       "text": "大家好，我是新来的转学生，请多关照！",
       "background": "image-back/bg_classroom.png",
       "background_prompt": "",
-      "character_image": "",
-      "character_image_prompt": "",
-      "voice": ""
+      "voice": "",
+      "characters": [
+        {
+          "image": "",
+          "image_prompt": "",
+          "motion": "still"
+        }
+      ]
     },
     {
       "character": "旁白",
       "text": "教室里响起了热烈的掌声。也许，故事就从这里开始吧。",
       "background": "image-back/bg_classroom.png",
       "background_prompt": "",
-      "character_image": "",
-      "character_image_prompt": "",
-      "voice": ""
+      "voice": "",
+      "characters": [
+        {
+          "image": "",
+          "image_prompt": "",
+          "motion": "still"
+        }
+      ]
     },
     {
       "character": "旁白",
       "text": "——【普通开始结局 END】——",
       "background": "image-back/bg_classroom.png",
       "background_prompt": "",
-      "character_image": "",
-      "character_image_prompt": "",
-      "voice": ""
+      "voice": "",
+      "characters": [
+        {
+          "image": "",
+          "image_prompt": "",
+          "motion": "still"
+        }
+      ]
     }
   ],
   "choices": []

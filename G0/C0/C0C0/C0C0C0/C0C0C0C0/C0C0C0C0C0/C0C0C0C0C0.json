@@ -6,70 +6,105 @@
       "text": "（沉默了很久，然后轻轻点了点头）……嗯。",
       "background": "G0/image-back/bg_library.png",
       "background_prompt": "",
-      "character_image": "G0/image-person/char_sakura_happy.jpg",
-      "character_image_prompt": "",
       "voice": "",
-      "background_music": ""
+      "background_music": "",
+      "characters": [
+        {
+          "image": "G0/image-person/char_sakura_happy.jpg",
+          "image_prompt": "",
+          "motion": "still"
+        }
+      ]
     },
     {
       "character": "旁白",
       "text": "窗外，樱花花瓣随风飘落，阳光将图书馆染成了金色。",
       "background": "G0/image-back/bg_library.png",
       "background_prompt": "",
-      "character_image": "G0/image-person/char_sakura_happy.jpg",
-      "character_image_prompt": "",
       "voice": "",
-      "background_music": ""
+      "background_music": "",
+      "characters": [
+        {
+          "image": "G0/image-person/char_sakura_happy.jpg",
+          "image_prompt": "",
+          "motion": "still"
+        }
+      ]
     },
     {
       "character": "你",
       "text": "那……我也有话想对你说。从昨天开始，我就一直在想你。",
       "background": "G0/image-back/bg_library.png",
       "background_prompt": "",
-      "character_image": "G0/image-person/char_sakura_happy.jpg",
-      "character_image_prompt": "",
       "voice": "",
-      "background_music": ""
+      "background_music": "",
+      "characters": [
+        {
+          "image": "G0/image-person/char_sakura_happy.jpg",
+          "image_prompt": "",
+          "motion": "still"
+        }
+      ]
     },
     {
       "character": "樱花",
       "text": "（眼眶微微泛红，嘴角却忍不住上扬）……真是的，你这个人……",
       "background": "G0/image-back/bg_library.png",
       "background_prompt": "",
-      "character_image": "G0/image-person/char_sakura_happy.jpg",
-      "character_image_prompt": "",
       "voice": "",
-      "background_music": ""
+      "background_music": "",
+      "characters": [
+        {
+          "image": "G0/image-person/char_sakura_happy.jpg",
+          "image_prompt": "",
+          "motion": "still"
+        }
+      ]
     },
     {
       "character": "旁白",
       "text": "那天下午，你们在图书馆里待到了夕阳西下。书架之间，两颗心悄悄靠近，如同春日里盛开的樱花，美丽而短暂，却又令人难以忘怀。",
       "background": "G0/image-back/bg_library.png",
       "background_prompt": "",
-      "character_image": "G0/image-person/char_sakura_happy.jpg",
-      "character_image_prompt": "",
       "voice": "",
-      "background_music": ""
+      "background_music": "",
+      "characters": [
+        {
+          "image": "G0/image-person/char_sakura_happy.jpg",
+          "image_prompt": "",
+          "motion": "still"
+        }
+      ]
     },
     {
       "character": "旁白",
       "text": "这一刻，你知道——这段故事，才刚刚开始。",
       "background": "G0/image-back/bg_library.png",
       "background_prompt": "",
-      "character_image": "G0/image-person/char_sakura_happy.jpg",
-      "character_image_prompt": "",
       "voice": "",
-      "background_music": ""
+      "background_music": "",
+      "characters": [
+        {
+          "image": "G0/image-person/char_sakura_happy.jpg",
+          "image_prompt": "",
+          "motion": "still"
+        }
+      ]
     },
     {
       "character": "旁白",
       "text": "——【心意相通结局 TRUE END】——",
       "background": "G0/image-back/bg_library.png",
       "background_prompt": "",
-      "character_image": "",
-      "character_image_prompt": "",
       "voice": "",
-      "background_music": ""
+      "background_music": "",
+      "characters": [
+        {
+          "image": "",
+          "image_prompt": "",
+          "motion": "still"
+        }
+      ]
     }
   ],
   "choices": [],

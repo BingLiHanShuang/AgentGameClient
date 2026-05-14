@@ -18,7 +18,7 @@ AgentGame/
 │   └── nlohmann/json.hpp       # JSON 解析库（单头文件）
 │
 ├── G0/                         # 游戏根目录（示例：樱花物语）
-│   ├── G0.json                 # 开场场景（含 game_title 字段）
+│   ├── G0.json                 # 开场剧情（含 game_title 字段）
 │   ├── all_story.json          # 自动生成的存档文件
 │   ├── image-back/             # 背景图目录
 │   │   ├── images.json         # 背景图名称与 AI 提示词
@@ -31,7 +31,7 @@ AgentGame/
 │   ├── audio-person/           # 人声音频目录
 │   │   └── *.wav / *.mp3       # 人声文件
 │   ├── C0/                     # 选项 0 分支
-│   │   ├── C0.json
+│   │   ├── C0.json             # 分支剧情
 │   │   ├── C0C0/               # 子选项 0
 │   │   └── C0C1/               # 子选项 1
 │   ├── C1/                     # 选项 1 分支
@@ -39,10 +39,10 @@ AgentGame/
 │
 └── G0-example/                 # 示例游戏目录（展示所有功能）
     ├── G0-example.json         # 示例开场场景
-    ├── S0A/                    # 选项 A 分支
-    │   └── S0A.json
-    ├── S0B/                    # 选项 B 分支
-    │   └── S0B.json
+    ├── C0/                     # 选项 0 分支
+    │   └── C0.json
+    ├── C1/                     # 选项 1 分支
+    │   └── C1.json
     ├── image-back/
     │   └── images.json
     ├── image-person/
@@ -55,14 +55,15 @@ AgentGame/
 
 ---
 
-## 场景 JSON 格式（完整版）
+## 场景 JSON 格式
 
-每个选项目录下有一个与目录同名的 `.json` 文件：
+**开场剧情**目录下有一个与目录同名的 `.json` 文件：
 
 ```json
 {
   "game_title": "游戏标题（仅根最外层 JSON 需要）",
   "game_subtitle": "副标题（显示在标题下方，可留空）",
+  "game_summary": "这是一个关于青春与邂逅的故事...",
   "title_background": "G0/image-back/bg_title.png（标题界面背景图，可留空）",
   "title_background_prompt": "标题界面背景图AI 提示词，可留空",
   "title": "场景标题",
@@ -71,27 +72,24 @@ AgentGame/
       "character": "角色名（空字符串表示旁白）",
       "text": "对话文本",
 
-      "background": "G0/image-back/bg_xxx.png",
-      "background_prompt": "若图片未生成，填写 AI 提示词；已生成则留空",
-
-      "character_image": "G0/image-person/char_xxx.png",
-      "character_image_prompt": "若图片未生成，填写 AI 提示词；已生成则留空",
+      "background": "G0/image-back/bg_place_time.png（比如bg_school_night.png）",
+      "background_prompt": "若G0/image-back/bg_place_time.png未生成，填写详细的 AI 提示词；已生成则留空",
 
       "characters": [
         {
-          "image": "G0/image-person/char_a.png",
-          "image_prompt": "AI 提示词（图片已存在则留空）",
-          "motion": "still"
+          "image": "G0/image-person/char_a_expression_action.png（当前场景人物a的立绘，比如char_a_happy_jump.png）",
+          "image_prompt": "若G0/image-person/char_a_xxx.png未生成，填写详细的 AI 提示词；已生成则留空",
+          "motion": "still（当前立绘动画）"
         },
         {
-          "image": "G0/image-person/char_b.png",
-          "image_prompt": "",
-          "motion": "bounce"
+          "image": "G0/image-person/char_b_expression_action.png（可选，当前场景人物b的立绘，比如char_b_happy_jump.png）",
+          "image_prompt": "若G0/image-person/char_b_xxx.png未生成，填写详细的 AI 提示词；已生成则留空",
+          "motion": "bounce（当前立绘动画）"
         }
       ],
 
-      "voice": "G0/audio-person/voice_xxx.wav",
-      "background_music": "G0/audio-back/bgm_xxx.mp3"
+      "voice": "G0/audio-person/voice_xxx_xxx.wav（当前说话人与对话文本，比如voice_a_对话文本.wav）",
+      "background_music": "G0/audio-back/bgm_xxx.wav（当前环境BGM，比如bgm_beauty.wav）"
     }
   ],
   "choices": [
@@ -100,10 +98,88 @@ AgentGame/
       "dir": "对应子目录名"
     }
   ]
+}
+```
+
+每个**分支剧情**目录下有一个与目录同名的 `.json` 文件：
+
+```json
+{
+  "title": "场景标题",
+  "dialogues": [
+    {
+      "character": "角色名（空字符串表示旁白）",
+      "text": "对话文本",
+
+      "background": "G0/image-back/bg_place_time.png（比如bg_school_night.png）",
+      "background_prompt": "若G0/image-back/bg_place_time.png未生成，填写详细的 AI 提示词；已生成则留空",
+
+      "characters": [
+        {
+          "image": "G0/image-person/char_a_expression_action.png（当前场景人物a的立绘，比如char_a_happy_jump.png）",
+          "image_prompt": "若G0/image-person/char_a_xxx.png未生成，填写详细的 AI 提示词；已生成则留空",
+          "motion": "still（当前立绘动画）"
+        },
+        {
+          "image": "G0/image-person/char_b_expression_action.png（可选，当前场景人物b的立绘，比如char_b_happy_jump.png）",
+          "image_prompt": "若G0/image-person/char_b_xxx.png未生成，填写详细的 AI 提示词；已生成则留空",
+          "motion": "bounce（当前立绘动画）"
+        }
+      ],
+
+      "voice": "G0/audio-person/voice_xxx_xxx.wav（当前说话人与对话文本，比如voice_a_对话文本.wav）",
+      "background_music": "G0/audio-back/bgm_xxx.wav（当前环境BGM，比如bgm_beauty.wav）"
+    }
+  ],
+  "choices": [
+    {
+      "text": "选项显示文本",
+      "dir": "对应子目录名"
+    }
+  ]
+}
+```
+
+每个**分支结局**目录下有一个与目录同名的 `.json` 文件：
+
+```json
+{
+  "title": "场景标题",
+  "dialogues": [
+    {
+      "character": "角色名（空字符串表示旁白）",
+      "text": "对话文本",
+
+      "background": "G0/image-back/bg_place_time.png（比如bg_school_night.png）",
+      "background_prompt": "若G0/image-back/bg_place_time.png未生成，填写详细的 AI 提示词；已生成则留空",
+
+      "characters": [
+        {
+          "image": "G0/image-person/char_a_expression_action.png（当前场景人物a的立绘，比如char_a_happy_jump.png）",
+          "image_prompt": "若G0/image-person/char_a_xxx.png未生成，填写详细的 AI 提示词；已生成则留空",
+          "motion": "still（当前立绘动画）"
+        },
+        {
+          "image": "G0/image-person/char_b_expression_action.png（可选，当前场景人物b的立绘，比如char_b_happy_jump.png）",
+          "image_prompt": "若G0/image-person/char_b_xxx.png未生成，填写详细的 AI 提示词；已生成则留空",
+          "motion": "bounce（当前立绘动画）"
+        }
+      ],
+
+      "voice": "G0/audio-person/voice_xxx_xxx.wav（当前说话人与对话文本，比如voice_a_对话文本.wav）",
+      "background_music": "G0/audio-back/bgm_xxx.wav（当前环境BGM，比如bgm_beauty.wav）"
+    }
+  ],
+  "choices": [],
   "ending_background": "结束界面背景图，可留空，仅choices为空的 JSON 需要",
   "ending_background_prompt": "结束界面背景图AI 提示词，可留空，仅choices为空的 JSON 需要"
 }
 ```
+
+## AI 提示词规则
+
+75 token, 使用()提升权重，使用[]降低权重，提示词中禁止出现图片尺寸，提示词应包括如下几大要素:
+person count(1 girl, 1 boy, 2 boys, 2 girls, 1 other, multiple_girls, ...), character names, rating(general, sensitive, questionable, explicit), general tags, artist, score range based rating(masterpiece), year modifier(modern, recent, newest)
 
 ### 字段说明
 
@@ -111,22 +187,20 @@ AgentGame/
 |------|------|------|
 | `character` | ✓ | 说话角色名，空字符串表示旁白 |
 | `text` | ✓ | 对话文本 |
-| `background` | 二选一 | 背景图路径（相对于可执行文件目录） |
-| `background_prompt` | 二选一 | 背景图 AI 生成提示词（图片未生成时填写） |
-| `character_image` | 可选 | 单人物立绘路径（旧格式，向后兼容） |
-| `character_image_prompt` | 可选 | 单人物立绘 AI 提示词（旧格式） |
-| `characters` | 可选 | **多人物立绘数组**（新格式，优先于 character_image） |
+| `background` | ✓ | 背景图路径（相对于可执行文件目录） |
+| `background_prompt` | 可选 | 背景图 AI 生成提示词（图片未生成时填写） |
+| `characters` | ✓ | **多人物立绘数组**（支持单人，优先于 character_image） |
 | `voice` | 可选 | 人声音频路径（不循环，对话结束自动停止） |
 | `background_music` | 可选 | 背景音乐路径（循环播放） |
 
 - `choices` 为空数组时，该场景为结局，游戏结束后返回标题界面。
-- 若某段对话未指定 `characters` 也未指定 `character_image`，保持上一段的立绘不变。
+- 若某段对话未指定 `character_image`，保持上一段的立绘不变。
 - 若某段对话未指定 `background`，保持上一段的背景不变。
 
 ---
 
 ## 背景图片规则
-背景图片尺寸推荐wxh尺寸1280x720
+背景图片 wxh 尺寸必须大于等于 1280x720
 
 ## 多人物立绘与动画
 
@@ -336,3 +410,4 @@ engine.run();
 | 多人物同台 | 使用 `characters` 数组替代 `character_image` 字段 |
 | 立绘动画 | 在 `characters` 条目中设置 `motion` 字段 |
 | 热更新资源 | 直接替换文件，引擎下一帧自动检测并加载 |
+| 新增摘要 | 新增 `game_summary` 字段 |

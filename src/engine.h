@@ -24,10 +24,7 @@ struct Dialogue {
     std::string text;
     std::string background;
     std::string background_prompt;
-    // 旧字段（向后兼容，若 characters 为空则自动转换）
-    std::string character_image;
-    std::string character_image_prompt;
-    // 新字段：多人物立绘数组
+    // 多人物立绘数组
     std::vector<CharacterEntry> characters;
     std::string voice;             // 人声音频（audio-person/）
     std::string background_music;  // 背景音乐（audio-back/）
@@ -70,6 +67,7 @@ public:
 private:
     std::string      game_root_;
     std::string      game_title_;
+    std::string      game_summary_;  // 游戏总览（从根 JSON 读取）
     std::string      story_file_;
     sf::RenderWindow window_;
     sf::Font         font_;
