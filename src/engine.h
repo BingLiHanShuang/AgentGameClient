@@ -61,13 +61,16 @@ enum class MenuAction { NewGame, Continue, Review, Quit };
 
 class GalGameEngine {
 public:
-    explicit GalGameEngine(const std::string& game_root);
+    // story_dir：故事根目录（如 "Story"），引擎自动扫描其下子目录作为可选故事
+    explicit GalGameEngine(const std::string& story_dir);
     void run();
 
 private:
-    std::string      game_root_;
+    std::string      story_dir_;       // 故事集根目录，如 "Story"
+    std::string      current_story_;   // 当前选中的故事目录名，如 "G0"
+    std::string      game_root_;       // 当前故事完整路径，如 "Story/G0"
     std::string      game_title_;
-    std::string      game_summary_;  // 游戏总览（从根 JSON 读取）
+    std::string      game_summary_;    // 游戏总览（从根 JSON 读取）
     std::string      story_file_;
     sf::RenderWindow window_;
     sf::Font         font_;
@@ -103,7 +106,13 @@ private:
     // ── 初始化 ────────────────────────────────────────────────────────────────
     bool        loadFont();
     std::string loadGameTitle();
-    
+
+    // ── 故事管理 ──────────────────────────────────────────────────────────────
+    // 扫描 story_dir_ 下的所有子目录，返回排序后的故事名列表
+    std::vector<std::string> listStories() const;
+    // 切换到指定故事：更新 game_root_、story_file_，清空缓存，重新加载标题信息
+    void switchStory(const std::string& story_name);
+
     // ── 按空格隐藏对话框，再按空格显示对话框 ─────────────────────────────────────
     bool dialog_visible_ = true;
 

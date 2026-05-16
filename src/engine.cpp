@@ -1,5 +1,6 @@
 #include "engine.h"
 
+#include <algorithm>
 #include <cmath>
 #include <filesystem>
 #include <fstream>
@@ -11,6 +12,14 @@ using json   = nlohmann::json;
 
 static sf::String U(const std::string& s) {
     return sf::String::fromUtf8(s.begin(), s.end());
+}
+
+// 解析资源路径：若 filename 是纯文件名（无目录分隔符），则拼接 base_dir/filename；
+// 若已含路径（绝对路径或相对路径含目录），则原样返回，避免重复拼接。
+static std::string resolveAsset(const std::string& filename, const std::string& base_dir) {
+    if (filename.empty()) return "";
+    if (fs::path(filename).has_parent_path()) return filename;
+    return base_dir + "/" + filename;
 }
 
 // 修复 SFML 3.x 字体偏移：将 origin 设为 bounds.position，
@@ -29,20 +38,57 @@ std::string GalGameEngine::loadGameTitle() {
     json j;
     try { ifs >> j; } catch (...) { return "Galgame"; }
     game_subtitle_    = j.value("game_subtitle",    "");
-    title_background_ = j.value("title_background", "");
-    game_summary_     = j.value("game_summary",     "");   // 新增
+    title_background_ = resolveAsset(j.value("title_background", ""),
+                                     game_root_ + "/image-back");
+    game_summary_     = j.value("game_summary",     "");
     return j.value("game_title", "Galgame");
 }
 
+// ── 故事管理 ──────────────────────────────────────────────────────────────────
+std::vector<std::string> GalGameEngine::listStories() const {
+    std::vector<std::string> stories;
+    if (!fs::exists(story_dir_)) return stories;
+    for (const auto& entry : fs::directory_iterator(story_dir_)) {
+        if (entry.is_directory()) {
+            stories.push_back(entry.path().filename().string());
+        }
+    }
+    std::sort(stories.begin(), stories.end());
+    return stories;
+}
+
+void GalGameEngine::switchStory(const std::string& story_name) {
+    if (story_name == current_story_) return;
+    current_story_ = story_name;
+    game_root_     = story_dir_ + "/" + current_story_;
+    story_file_    = game_root_ + "/all_story.json";
+    // 清空资源缓存（路径已变更）
+    tex_cache_.clear();
+    snd_cache_.clear();
+    // 停止音频
+    if (current_sound_) { current_sound_->stop(); current_sound_.reset(); }
+    current_bgm_.stop();
+    current_bgm_path_.clear();
+    // 重新加载标题信息
+    game_title_ = loadGameTitle();
+    window_.setTitle(U(game_title_));
+}
+
 // ── 构造 / 字体 ───────────────────────────────────────────────────────────────
-GalGameEngine::GalGameEngine(const std::string& game_root)
-    : game_root_(game_root)
-    , story_file_(game_root + "/all_story.json")
+GalGameEngine::GalGameEngine(const std::string& story_dir)
+    : story_dir_(story_dir)
     , window_(sf::VideoMode({WIN_W, WIN_H}), "Galgame",
               sf::Style::Close | sf::Style::Titlebar)
 {
     window_.setFramerateLimit(60);
-    game_title_ = loadGameTitle();
+    // 自动选择第一个故事
+    auto stories = listStories();
+    if (stories.empty())
+        throw std::runtime_error("No stories found in directory: " + story_dir);
+    current_story_ = stories[0];
+    game_root_     = story_dir_ + "/" + current_story_;
+    story_file_    = game_root_ + "/all_story.json";
+    game_title_    = loadGameTitle();
     window_.setTitle(U(game_title_));
     if (!loadFont()) {
         window_.close();
@@ -53,19 +99,21 @@ GalGameEngine::GalGameEngine(const std::string& game_root)
 bool GalGameEngine::loadFont() {
     std::vector<std::string> paths;
 
-    // 动态获取当前用户的 LocalAppData 字体目录
+    // 1. 用户字体目录（%LOCALAPPDATA%\Microsoft\Windows\Fonts\）
     const char* localAppData = std::getenv("LOCALAPPDATA");
     if (localAppData) {
-        std::string userFontDir = std::string(localAppData) + "\\Microsoft\\Windows\\Fonts\\SourceHanSansSC-Normal.otf";
-        // 将反斜杠替换为正斜杠（SFML 支持正斜杠，也可保留反斜杠）
-        std::replace(userFontDir.begin(), userFontDir.end(), '\\', '/');
-        paths.push_back(userFontDir);
+        std::string base = localAppData;
+        std::replace(base.begin(), base.end(), '\\', '/');
+        paths.push_back(base + "/Microsoft/Windows/Fonts/SourceHanSansSC-Normal.otf");
+        paths.push_back(base + "/Microsoft/Windows/Fonts/SourceHanSansSC-Regular.otf");
     }
 
+    // 2. 系统字体目录（C:\Windows\Fonts\）
+    paths.push_back("C:/Windows/Fonts/SourceHanSansSC-Normal.otf");
+    paths.push_back("C:/Windows/Fonts/SourceHanSansSC-Regular.otf");
+
     for (const auto& p : paths) {
-        if (font_.openFromFile(p)) {
-            return true;
-        }
+        if (font_.openFromFile(p)) return true;
     }
     return false;
 }
@@ -76,7 +124,7 @@ bool GalGameEngine::hasSaveFile() const { return fs::exists(story_file_); }
 void GalGameEngine::initNewStory() {
     story_data_ = json::object();
     story_data_["game_title"]    = game_title_;
-    story_data_["game_summary"]  = game_summary_;          // 新增
+    story_data_["game_summary"]  = game_summary_;
     story_data_["current_scene"] = game_root_;
     story_data_["story"]         = json::array();
     if (fs::exists(story_file_)) fs::remove(story_file_);
@@ -88,12 +136,12 @@ void GalGameEngine::appendSceneToStory(const Scene& scene, const std::string& di
     json dlgs = json::array();
     for (const auto& d : scene.dialogues) {
         json dj;
-        dj["character"]              = d.character;
-        dj["text"]                   = d.text;
-        dj["background"]             = d.background;
-        dj["background_prompt"]      = d.background_prompt;
-        dj["voice"]                  = d.voice;
-        dj["background_music"]       = d.background_music;
+        dj["character"]         = d.character;
+        dj["text"]              = d.text;
+        dj["background"]        = d.background;
+        dj["background_prompt"] = d.background_prompt;
+        dj["voice"]             = d.voice;
+        dj["background_music"]  = d.background_music;
         json chars = json::array();
         for (const auto& ce : d.characters) {
             json cj;
@@ -260,7 +308,7 @@ std::vector<sf::String> GalGameEngine::wrapText(const std::string& u8, unsigned 
 
 // ── 绘制：对话框 ──────────────────────────────────────────────────────────────
 void GalGameEngine::drawDialogueBox(const std::string& character, const std::string& text) {
-    if (!dialog_visible_) return;  // 隐藏对话框，不绘制任何内容
+    if (!dialog_visible_) return;
     sf::RectangleShape panel({(float)WIN_W, (float)DLGBOX_H});
     panel.setPosition({0.f, (float)DLGBOX_Y});
     panel.setFillColor(sf::Color(0, 0, 0, 210)); window_.draw(panel);
@@ -297,7 +345,7 @@ void GalGameEngine::drawDialogueBox(const std::string& character, const std::str
     }
 }
 
-// ── 选项界面（选项文本自动换行，按钮高度动态；数字与第一行文字对齐）──────────
+// ── 选项界面 ──────────────────────────────────────────────────────────────────
 int GalGameEngine::runChoiceScreen(const std::string& bg,
                                     const std::vector<CharacterEntry>& chars,
                                     const std::vector<Choice>& choices) {
@@ -363,11 +411,9 @@ int GalGameEngine::runChoiceScreen(const std::string& bg,
             btn.setOutlineColor(h ? sf::Color(160, 190, 255) : sf::Color(80, 80, 130));
             window_.draw(btn);
 
-            // 先算文字起始 y，再让数字与第一行文字对齐
             float text_total_h = choice_lines[i].size() * LINE_H - 6.f;
             float text_y = y + (bh - text_total_h) / 2.f;
 
-            // 数字与第一行文字视觉中心对齐（消除 ASCII 与中文字高差异）
             sf::Text num = makeText(std::to_string(i + 1) + ".", FS_NORMAL, sf::Color(255, 220, 80));
             float num_h = num.getLocalBounds().size.y;
             float ct_h  = num_h;
@@ -392,88 +438,166 @@ int GalGameEngine::runChoiceScreen(const std::string& bg,
     return -1;
 }
 
-// ── 标题界面 ──────────────────────────────────────────────────────────────────
-// 菜单顺序：新游戏 / 继续游戏 / 旅途重温 / 退出游戏
-// 标题块中心对齐到距顶部 1/4 屏幕高度处；副标题从 JSON 读取；背景图可配置
+// ── 标题界面（含故事选择下拉框）──────────────────────────────────────────────
+// 布局：左侧居中菜单按钮（宽400），右侧下拉框（宽280）与"新游戏"按钮顶部对齐
 MenuAction GalGameEngine::runTitleScreen() {
-    std::string nt = loadGameTitle();
-    if (nt != game_title_) { game_title_ = nt; window_.setTitle(U(game_title_)); }
-    bool has_save = hasSaveFile();
+    // ── 故事列表（下拉框数据）
+    auto stories = listStories();
+    bool dropdown_open = false;
+    int  dd_hov = -1;  // 下拉列表中鼠标悬停的条目索引
 
-    struct MenuItem { std::string label; bool enabled; MenuAction action; };
-    std::vector<MenuItem> items = {
-        // 新游戏
-        { "\xe6\x96\xb0\xe6\xb8\xb8\xe6\x88\x8f",             true,     MenuAction::NewGame  },
-        // 继续游戏
-        { "\xe7\xbb\xa7\xe7\xbb\xad\xe6\xb8\xb8\xe6\x88\x8f", has_save, MenuAction::Continue },
-        // 旅途重温
-        { "\xe6\x97\x85\xe9\x80\x94\xe9\x87\x8d\xe6\xb8\xa9", has_save, MenuAction::Review   },
-        // 退出游戏
-        { "\xe9\x80\x80\xe5\x87\xba\xe6\xb8\xb8\xe6\x88\x8f", true,     MenuAction::Quit     },
-    };
-    const float BW = 400.f, BG = 16.f;
-    const float sx = (WIN_W - BW) / 2.f;
+    // ── 布局常量
+    const float BW     = 400.f, BG = 16.f;
+    const float sx     = (WIN_W - BW) / 2.f;
     const float MIN_BH = 60.f;
     const float LINE_H = FS_NORMAL + 6.f;
+    const float DD_W   = 280.f;   // 下拉框宽度
+    const float DD_H   = 50.f;    // 下拉框折叠高度
+    const float DD_X   = sx + BW + 20.f;  // 下拉框 X（紧靠按钮右侧）
+    const float DD_ITEM_H = 44.f; // 下拉列表每项高度
 
-    auto title_lines = wrapText(game_title_, FS_LARGE, WIN_W - 100.f);
+    // ── 需要在故事切换后重新计算的状态
+    bool need_reload = true;
+    bool has_save    = false;
 
-    float title_block_h = title_lines.size() * (FS_LARGE + 8.f) - 8.f;
-    if (!game_subtitle_.empty()) title_block_h += FS_NORMAL + 12.f;
-    float title_start_y = WIN_H / 4.f - title_block_h / 2.f;
-
+    struct MenuItem { std::string label; bool enabled; MenuAction action; };
+    std::vector<MenuItem> items;
     std::vector<std::vector<sf::String>> item_lines;
     std::vector<float> item_heights;
-    for (const auto& item : items) {
-        auto lines = wrapText(item.label, FS_NORMAL, BW - 20.f);
-        item_lines.push_back(lines);
-        float h = std::max(MIN_BH, (float)lines.size() * LINE_H + 20.f);
-        item_heights.push_back(h);
-    }
-
-    float total_btn_h = 0.f;
-    for (float h : item_heights) total_btn_h += h;
-    total_btn_h += (items.size() - 1) * BG;
-    const float sy = WIN_H / 2.f + (WIN_H / 2.f - total_btn_h) / 2.f;
-
+    float sy_btn = 0.f;
     std::vector<float> btn_y;
-    { float cur = sy; for (size_t i = 0; i < items.size(); ++i) { btn_y.push_back(cur); cur += item_heights[i] + BG; } }
-
-    // 无存档时默认选"新游戏"(0)，有存档时默认选"继续游戏"(1)
-    int selected = has_save ? 1 : 0;
+    std::vector<sf::String> title_lines;
+    float title_start_y = 0.f;
+    int selected = 0;
 
     while (window_.isOpen()) {
-        sf::Vector2i mp = sf::Mouse::getPosition(window_);
-        int hov = -1;
-        for (size_t i = 0; i < items.size(); ++i)
-            if (items[i].enabled &&
-                sf::FloatRect({sx, btn_y[i]}, {BW, item_heights[i]})
-                    .contains({(float)mp.x, (float)mp.y}))
-                hov = (int)i;
+        // ── 故事切换后重新加载标题信息和布局
+        if (need_reload) {
+            need_reload = false;
+            std::string nt = loadGameTitle();
+            if (nt != game_title_) { game_title_ = nt; window_.setTitle(U(game_title_)); }
+            has_save = hasSaveFile();
 
-        while (const auto event = window_.pollEvent()) {
-            if (event->is<sf::Event::Closed>()) { window_.close(); return MenuAction::Quit; }
-            if (const auto* key = event->getIf<sf::Event::KeyPressed>()) {
-                if (key->code == sf::Keyboard::Key::Up)
-                    do { selected = (selected - 1 + (int)items.size()) % (int)items.size(); }
-                    while (!items[selected].enabled);
-                if (key->code == sf::Keyboard::Key::Down)
-                    do { selected = (selected + 1) % (int)items.size(); }
-                    while (!items[selected].enabled);
-                if (key->code == sf::Keyboard::Key::Enter ||
-                    key->code == sf::Keyboard::Key::Space)
-                    return items[selected].action;
-                if (key->code == sf::Keyboard::Key::Escape)
-                    return MenuAction::Quit;
+            items = {
+                // 新游戏
+                { "\xe6\x96\xb0\xe6\xb8\xb8\xe6\x88\x8f",             true,     MenuAction::NewGame  },
+                // 继续游戏
+                { "\xe7\xbb\xa7\xe7\xbb\xad\xe6\xb8\xb8\xe6\x88\x8f", has_save, MenuAction::Continue },
+                // 旅途重温
+                { "\xe6\x97\x85\xe9\x80\x94\xe9\x87\x8d\xe6\xb8\xa9", has_save, MenuAction::Review   },
+                // 退出游戏
+                { "\xe9\x80\x80\xe5\x87\xba\xe6\xb8\xb8\xe6\x88\x8f", true,     MenuAction::Quit     },
+            };
+
+            title_lines = wrapText(game_title_, FS_LARGE, WIN_W - 100.f);
+            float title_block_h = title_lines.size() * (FS_LARGE + 8.f) - 8.f;
+            if (!game_subtitle_.empty()) title_block_h += FS_NORMAL + 12.f;
+            title_start_y = WIN_H / 4.f - title_block_h / 2.f;
+
+            item_lines.clear();
+            item_heights.clear();
+            for (const auto& item : items) {
+                auto lines = wrapText(item.label, FS_NORMAL, BW - 20.f);
+                item_lines.push_back(lines);
+                float h = std::max(MIN_BH, (float)lines.size() * LINE_H + 20.f);
+                item_heights.push_back(h);
             }
-            if (const auto* mb = event->getIf<sf::Event::MouseButtonPressed>())
-                if (mb->button == sf::Mouse::Button::Left && hov >= 0)
-                    return items[hov].action;
+
+            float total_btn_h = 0.f;
+            for (float h : item_heights) total_btn_h += h;
+            total_btn_h += (items.size() - 1) * BG;
+            sy_btn = WIN_H / 2.f + (WIN_H / 2.f - total_btn_h) / 2.f;
+
+            btn_y.clear();
+            { float cur = sy_btn; for (size_t i = 0; i < items.size(); ++i) { btn_y.push_back(cur); cur += item_heights[i] + BG; } }
+
+            selected = has_save ? 1 : 0;
         }
 
+        // ── 下拉框位置（与"新游戏"按钮顶部对齐）
+        const float DD_Y = btn_y.empty() ? 300.f : btn_y[0];
+
+        // ── 鼠标位置
+        sf::Vector2i mp = sf::Mouse::getPosition(window_);
+        float mx = (float)mp.x, my = (float)mp.y;
+
+        // ── 菜单按钮悬停（下拉框打开时禁用）
+        int hov = -1;
+        if (!dropdown_open) {
+            for (size_t i = 0; i < items.size(); ++i)
+                if (items[i].enabled &&
+                    sf::FloatRect({sx, btn_y[i]}, {BW, item_heights[i]}).contains({mx, my}))
+                    hov = (int)i;
+        }
+
+        // ── 下拉列表条目悬停
+        dd_hov = -1;
+        if (dropdown_open && !stories.empty()) {
+            for (int i = 0; i < (int)stories.size(); ++i) {
+                float iy = DD_Y + DD_H + i * DD_ITEM_H;
+                if (sf::FloatRect({DD_X, iy}, {DD_W, DD_ITEM_H}).contains({mx, my}))
+                    dd_hov = i;
+            }
+        }
+
+        // ── 事件处理
+        while (const auto event = window_.pollEvent()) {
+            if (event->is<sf::Event::Closed>()) { window_.close(); return MenuAction::Quit; }
+
+            if (const auto* key = event->getIf<sf::Event::KeyPressed>()) {
+                if (dropdown_open) {
+                    if (key->code == sf::Keyboard::Key::Escape) dropdown_open = false;
+                } else {
+                    if (key->code == sf::Keyboard::Key::Up)
+                        do { selected = (selected - 1 + (int)items.size()) % (int)items.size(); }
+                        while (!items[selected].enabled);
+                    if (key->code == sf::Keyboard::Key::Down)
+                        do { selected = (selected + 1) % (int)items.size(); }
+                        while (!items[selected].enabled);
+                    if (key->code == sf::Keyboard::Key::Enter ||
+                        key->code == sf::Keyboard::Key::Space)
+                        return items[selected].action;
+                    if (key->code == sf::Keyboard::Key::Escape)
+                        return MenuAction::Quit;
+                }
+            }
+
+            if (const auto* mb = event->getIf<sf::Event::MouseButtonPressed>()) {
+                if (mb->button == sf::Mouse::Button::Left) {
+                    float cx = (float)mb->position.x, cy = (float)mb->position.y;
+
+                    // 点击下拉框头部：切换展开/折叠
+                    if (sf::FloatRect({DD_X, DD_Y}, {DD_W, DD_H}).contains({cx, cy})) {
+                        dropdown_open = !dropdown_open;
+                    }
+                    // 下拉框展开时：点击条目或点击外部
+                    else if (dropdown_open) {
+                        bool clicked_item = false;
+                        for (int i = 0; i < (int)stories.size(); ++i) {
+                            float iy = DD_Y + DD_H + i * DD_ITEM_H;
+                            if (sf::FloatRect({DD_X, iy}, {DD_W, DD_ITEM_H}).contains({cx, cy})) {
+                                switchStory(stories[i]);
+                                dropdown_open = false;
+                                need_reload   = true;
+                                clicked_item  = true;
+                                break;
+                            }
+                        }
+                        if (!clicked_item) dropdown_open = false;
+                    }
+                    // 点击菜单按钮
+                    else if (hov >= 0) {
+                        return items[hov].action;
+                    }
+                }
+            }
+        }
+
+        // ── 渲染
         window_.clear(sf::Color(10, 10, 28));
         if (!title_background_.empty()) drawBackground(title_background_);
 
+        // 标题
         float title_y = title_start_y;
         for (const auto& ln : title_lines) {
             sf::Text tl(font_, ln, FS_LARGE);
@@ -484,16 +608,17 @@ MenuAction GalGameEngine::runTitleScreen() {
             title_y += FS_LARGE + 8.f;
         }
 
-        // 副标题（亮色，从 JSON 读取）
+        // 副标题
         if (!game_subtitle_.empty()) {
             sf::Text sub = makeText(game_subtitle_, FS_NORMAL, sf::Color(255, 255, 180));
             sub.setPosition({(WIN_W - sub.getLocalBounds().size.x) / 2.f, title_y + 4.f});
             window_.draw(sub);
         }
 
+        // 菜单按钮
         for (size_t i = 0; i < items.size(); ++i) {
             float y = btn_y[i], bh = item_heights[i];
-            bool h = ((int)i == hov || (hov < 0 && (int)i == selected));
+            bool h  = ((int)i == hov || (hov < 0 && (int)i == selected && !dropdown_open));
             bool en = items[i].enabled;
 
             sf::RectangleShape btn({BW, bh}); btn.setPosition({sx, y});
@@ -516,12 +641,71 @@ MenuAction GalGameEngine::runTitleScreen() {
                 label_y += LINE_H;
             }
         }
+
+        // ── 故事选择下拉框
+        if (!stories.empty()) {
+            // 标签 "故事选择"
+            sf::Text dd_label = makeText(
+                "\xe6\x95\x85\xe4\xba\x8b\xe9\x80\x89\xe6\x8b\xa9",
+                20, sf::Color(180, 180, 200, 220));
+            dd_label.setPosition({DD_X, DD_Y - 26.f});
+            window_.draw(dd_label);
+
+            // 下拉框头部
+            bool dd_box_hov = sf::FloatRect({DD_X, DD_Y}, {DD_W, DD_H}).contains({mx, my});
+            sf::RectangleShape dd_box({DD_W, DD_H});
+            dd_box.setPosition({DD_X, DD_Y});
+            dd_box.setFillColor(dropdown_open || dd_box_hov
+                ? sf::Color(70, 110, 200, 235) : sf::Color(20, 20, 60, 210));
+            dd_box.setOutlineThickness(dropdown_open || dd_box_hov ? 2.f : 1.f);
+            dd_box.setOutlineColor(dropdown_open || dd_box_hov
+                ? sf::Color(160, 190, 255) : sf::Color(60, 60, 100));
+            window_.draw(dd_box);
+
+            // 当前故事名
+            sf::Text dd_cur = makeText(current_story_, FS_NORMAL, sf::Color::White);
+            dd_cur.setPosition({DD_X + 12.f,
+                DD_Y + (DD_H - dd_cur.getLocalBounds().size.y) / 2.f});
+            window_.draw(dd_cur);
+
+            // 箭头 ▼ / ▲
+            sf::Text dd_arrow = makeText(
+                dropdown_open ? "\xe2\x96\xb2" : "\xe2\x96\xbc",
+                FS_NORMAL - 6, sf::Color(255, 220, 80));
+            dd_arrow.setPosition({DD_X + DD_W - 28.f,
+                DD_Y + (DD_H - dd_arrow.getLocalBounds().size.y) / 2.f});
+            window_.draw(dd_arrow);
+
+            // 展开的下拉列表
+            if (dropdown_open) {
+                for (int i = 0; i < (int)stories.size(); ++i) {
+                    float iy = DD_Y + DD_H + i * DD_ITEM_H;
+                    bool  ih = (dd_hov == i);
+                    bool  is_cur = (stories[i] == current_story_);
+
+                    sf::RectangleShape item_box({DD_W, DD_ITEM_H});
+                    item_box.setPosition({DD_X, iy});
+                    item_box.setFillColor(ih ? sf::Color(70, 110, 200, 235)
+                                            : sf::Color(15, 15, 55, 230));
+                    item_box.setOutlineThickness(1.f);
+                    item_box.setOutlineColor(sf::Color(60, 60, 100));
+                    window_.draw(item_box);
+
+                    sf::Text item_text = makeText(stories[i], FS_NORMAL,
+                        is_cur ? sf::Color(255, 220, 80) : sf::Color::White);
+                    item_text.setPosition({DD_X + 12.f,
+                        iy + (DD_ITEM_H - item_text.getLocalBounds().size.y) / 2.f});
+                    window_.draw(item_text);
+                }
+            }
+        }
+
         window_.display();
     }
     return MenuAction::Quit;
 }
 
-// ── 结局界面（bg 来自结局场景 JSON 的 ending_background 字段）────────────────
+// ── 结局界面 ──────────────────────────────────────────────────────────────────
 void GalGameEngine::runEndingScreen(const std::string& bg) {
     while (window_.isOpen()) {
         while (const auto event = window_.pollEvent()) {
@@ -578,29 +762,32 @@ void GalGameEngine::runReviewMode() {
         if (type == "scene") {
             for (const auto& d : entry.value("dialogues", json::array())) {
                 Dialogue dlg;
-                dlg.character              = d.value("character", "");
-                dlg.text                   = d.value("text", "");
-                dlg.background             = d.value("background", "");
-                dlg.background_prompt      = d.value("background_prompt", "");
-                dlg.voice                  = d.value("voice", "");
-                dlg.background_music       = d.value("background_music", "");
+                dlg.character         = d.value("character", "");
+                dlg.text              = d.value("text", "");
+                dlg.background        = resolveAsset(d.value("background", ""),
+                                                     game_root_ + "/image-back");
+                dlg.background_prompt = d.value("background_prompt", "");
+                dlg.voice             = resolveAsset(d.value("voice", ""),
+                                                     game_root_ + "/audio-person");
+                dlg.background_music  = resolveAsset(d.value("background_music", ""),
+                                                     game_root_ + "/audio-back");
                 for (const auto& c : d.value("characters", json::array())) {
                     CharacterEntry ce;
-                    ce.image = c.value("image","");
-                    ce.image_prompt = c.value("image_prompt","");
-                    ce.motion = c.value("motion","still");
+                    ce.image        = resolveAsset(c.value("image", ""),
+                                                   game_root_ + "/image-person");
+                    ce.image_prompt = c.value("image_prompt", "");
+                    ce.motion       = c.value("motion", "still");
                     dlg.characters.push_back(ce);
                 }
-
-                // 兼容旧存档：自动转换旧格式的单角色字段
+                // 兼容旧存档
                 if (dlg.characters.empty() && d.contains("character_image")) {
                     CharacterEntry ce;
-                    ce.image = d["character_image"].get<std::string>();
+                    ce.image        = resolveAsset(d["character_image"].get<std::string>(),
+                                                   game_root_ + "/image-person");
                     ce.image_prompt = d.value("character_image_prompt", "");
-                    ce.motion = "still";
+                    ce.motion       = "still";
                     dlg.characters.push_back(ce);
                 }
-
                 if (!dlg.background.empty()) last_bg    = dlg.background;
                 if (!dlg.characters.empty()) last_chars = dlg.characters;
                 ReviewItem item; item.is_choice = false;
@@ -609,7 +796,7 @@ void GalGameEngine::runReviewMode() {
             }
         } else if (type == "choice") {
             ReviewItem item; item.is_choice = true;
-            item.choice_text = entry.value("text","");
+            item.choice_text = entry.value("text", "");
             item.bg = last_bg; item.chars = last_chars;
             items.push_back(item);
         }
@@ -628,32 +815,22 @@ void GalGameEngine::runReviewMode() {
             while (const auto event = window_.pollEvent()) {
                 if (event->is<sf::Event::Closed>()) { window_.close(); return; }
                 if (const auto* key = event->getIf<sf::Event::KeyPressed>()) {
-                    // 空格键始终切换对话框显示/隐藏
                     if (key->code == sf::Keyboard::Key::Space) {
-                        dialog_visible_ = !dialog_visible_;
-                        continue;
+                        dialog_visible_ = !dialog_visible_; continue;
                     }
-                    // 只有在对话框可见时，才允许前进（Right / Enter）或后退（Left）
                     if (dialog_visible_) {
-                        if (key->code == sf::Keyboard::Key::Right || key->code == sf::Keyboard::Key::Enter) {
-                            advance = true;
-                        }
-                        if (key->code == sf::Keyboard::Key::Left) {
-                            go_back = true;
-                        }
+                        if (key->code == sf::Keyboard::Key::Right ||
+                            key->code == sf::Keyboard::Key::Enter)  advance = true;
+                        if (key->code == sf::Keyboard::Key::Left)   go_back = true;
                     }
                     if (key->code == sf::Keyboard::Key::Escape) {
                         if (current_sound_) current_sound_->stop();
-                        current_bgm_.stop(); current_bgm_path_.clear();
-                        return;
+                        current_bgm_.stop(); current_bgm_path_.clear(); return;
                     }
                 }
-                if (const auto* mb = event->getIf<sf::Event::MouseButtonPressed>()) {
-                    // 只有在对话框可见时，鼠标左键才能推进对话
-                    if (dialog_visible_ && mb->button == sf::Mouse::Button::Left) {
+                if (const auto* mb = event->getIf<sf::Event::MouseButtonPressed>())
+                    if (dialog_visible_ && mb->button == sf::Mouse::Button::Left)
                         advance = true;
-                    }
-                }
             }
             window_.clear();
             drawBackground(item.bg);
@@ -671,8 +848,8 @@ void GalGameEngine::runReviewMode() {
                     "    \xe2\x86\x90 \xe5\x9b\x9e\xe9\x80\x80"
                     "    \xe2\x86\x92 \xe7\xbb\xa7\xe7\xbb\xad"
                     "    Esc \xe9\x80\x80\xe5\x87\xba"
-                    "    空格 \xe5\x88\x87\xe6\x8d\xa2\xe9\x9a\x90\xe8\x97\x8f/\xe6\x98\xbe\xe7\xa4\xba\xe5\xaf\xb9\xe8\xaf\x9d\xe6\xa1\x86";
-                sf::Text ht = makeText(hint, 18, sf::Color(200,200,200,200));
+                    "    \xe7\xa9\xba\xe6\xa0\xbc \xe5\x88\x87\xe6\x8d\xa2\xe9\x9a\x90\xe8\x97\x8f/\xe6\x98\xbe\xe7\xa4\xba\xe5\xaf\xb9\xe8\xaf\x9d\xe6\xa1\x86";
+                sf::Text ht = makeText(hint, 18, sf::Color(200, 200, 200, 200));
                 ht.setPosition({10.f, 8.f}); window_.draw(ht);
             }
             window_.display();
@@ -702,32 +879,36 @@ Scene GalGameEngine::loadScene(const std::string& scene_dir) {
     }
     Scene scene;
     scene.title             = j.value("title",             "");
-    scene.ending_background = j.value("ending_background", "");
+    scene.ending_background = resolveAsset(j.value("ending_background", ""),
+                                           game_root_ + "/image-back");
     for (const auto& d : j.value("dialogues", json::array())) {
         Dialogue dlg;
-        dlg.character              = d.value("character", "");
-        dlg.text                   = d.value("text", "");
-        dlg.background             = d.value("background", "");
-        dlg.background_prompt      = d.value("background_prompt", "");
-        dlg.voice                  = d.value("voice", "");
-        dlg.background_music       = d.value("background_music", "");
+        dlg.character         = d.value("character", "");
+        dlg.text              = d.value("text", "");
+        dlg.background        = resolveAsset(d.value("background", ""),
+                                             game_root_ + "/image-back");
+        dlg.background_prompt = d.value("background_prompt", "");
+        dlg.voice             = resolveAsset(d.value("voice", ""),
+                                             game_root_ + "/audio-person");
+        dlg.background_music  = resolveAsset(d.value("background_music", ""),
+                                             game_root_ + "/audio-back");
         for (const auto& c : d.value("characters", json::array())) {
             CharacterEntry ce;
-            ce.image        = c.value("image", "");
+            ce.image        = resolveAsset(c.value("image", ""),
+                                           game_root_ + "/image-person");
             ce.image_prompt = c.value("image_prompt", "");
             ce.motion       = c.value("motion", "still");
             dlg.characters.push_back(ce);
         }
-
-        // 保留向后兼容：自动转换旧格式的单角色字段
+        // 向后兼容旧格式
         if (dlg.characters.empty() && d.contains("character_image")) {
             CharacterEntry ce;
-            ce.image = d["character_image"].get<std::string>();
+            ce.image        = resolveAsset(d["character_image"].get<std::string>(),
+                                           game_root_ + "/image-person");
             ce.image_prompt = d.value("character_image_prompt", "");
-            ce.motion = "still";
+            ce.motion       = "still";
             dlg.characters.push_back(ce);
         }
-
         scene.dialogues.push_back(std::move(dlg));
     }
     for (const auto& c : j.value("choices", json::array())) {
@@ -739,7 +920,7 @@ Scene GalGameEngine::loadScene(const std::string& scene_dir) {
 
 // ── 播放场景（递归）──────────────────────────────────────────────────────────
 void GalGameEngine::playScene(const std::string& scene_dir) {
-    dialog_visible_ = true;  // 每次场景开始时确保对话框可见
+    dialog_visible_ = true;
     if (!window_.isOpen()) return;
     Scene scene = loadScene(scene_dir);
     if (scene_dir == game_root_) {
@@ -763,22 +944,15 @@ void GalGameEngine::playScene(const std::string& scene_dir) {
             while (const auto event = window_.pollEvent()) {
                 if (event->is<sf::Event::Closed>()) { window_.close(); return; }
                 if (const auto* key = event->getIf<sf::Event::KeyPressed>()) {
-                    // 空格键始终切换对话框显示/隐藏
                     if (key->code == sf::Keyboard::Key::Space) {
-                        dialog_visible_ = !dialog_visible_;
-                        continue;  // 不推进对话
+                        dialog_visible_ = !dialog_visible_; continue;
                     }
-                    // 只有在对话框可见时，回车键才能推进对话
-                    if (dialog_visible_ && key->code == sf::Keyboard::Key::Enter) {
+                    if (dialog_visible_ && key->code == sf::Keyboard::Key::Enter)
                         advance = true;
-                    }
                 }
-                if (const auto* mb = event->getIf<sf::Event::MouseButtonPressed>()) {
-                    // 只有在对话框可见时，鼠标左键才能推进对话
-                    if (dialog_visible_ && mb->button == sf::Mouse::Button::Left) {
+                if (const auto* mb = event->getIf<sf::Event::MouseButtonPressed>())
+                    if (dialog_visible_ && mb->button == sf::Mouse::Button::Left)
                         advance = true;
-                    }
-                }
             }
             window_.clear();
             drawBackground(last_bg);
@@ -798,7 +972,6 @@ void GalGameEngine::playScene(const std::string& scene_dir) {
             playScene(next_dir);
         }
     } else {
-        // 将结局场景 JSON 中的 ending_background 传给结局界面
         runEndingScreen(scene.ending_background);
     }
 }

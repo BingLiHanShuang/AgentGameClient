@@ -1,6 +1,6 @@
 {
-  "game_title": "樱花物语",
-  "game_subtitle": "- 一个关于青春与邂逅的故事 -",
+  "game_title": "樱花物语G0",
+  "game_subtitle": "G0- 一个关于青春与邂逅的故事 -",
   "game_summary": "这是一个关于青春与邂逅的故事...",
   "title_background": "bg_school_gate.jpg",
   "title_background_prompt": "anime style, school gate with cherry blossom trees, spring morning, warm sunlight, petals falling, detailed background, high quality",
@@ -8,7 +8,7 @@
   "dialogues": [
     {
       "character": "旁白",
-      "text": "春日的早晨，阳光透过樱花树洒落在校园里。作为转学生的你，第一天来到了樱花高中。",
+      "text": "G0春日的早晨，阳光透过樱花树洒落在校园里。作为转学生的你，第一天来到了樱花高中。",
       "background": "bg_school_gate.jpg",
       "background_prompt": "anime style, school gate with cherry blossom trees, spring morning, warm sunlight, petals falling, detailed background, high quality",
       "voice": "",
@@ -23,7 +23,7 @@
     },
     {
       "character": "旁白",
-      "text": "校门口，粉色的花瓣随风飘落，空气中弥漫着淡淡的花香。你站在校门前，深吸一口气，感受着新生活的开始。",
+      "text": "G0校门口，粉色的花瓣随风飘落，空气中弥漫着淡淡的花香。你站在校门前，深吸一口气，感受着新生活的开始。",
       "background": "bg_school_gate.jpg",
       "background_prompt": "",
       "voice": "",
@@ -84,7 +84,7 @@
   ],
   "choices": [
     {
-      "text": "走向喷泉广场，那里有个女生在看书",
+      "text": "G0走向喷泉广场，那里有个女生在看书",
       "dir": "C0"
     },
     {

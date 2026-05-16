@@ -53,11 +53,10 @@ if(WIN32)
 endif()
 
 # ── 构建后将游戏数据复制到可执行文件目录 ─────────────────────────────────
-# image-back / image-person / audio-back / audio-person 已移入 G0/ 目录，
-# 随 G0 整体复制，无需单独处理。
+# Story/ 目录包含所有故事子目录（如 G0/、AnyStory/ 等），整体复制。
 add_custom_command(TARGET galgame POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory
-        "${CMAKE_SOURCE_DIR}/G0"
-        "$<TARGET_FILE_DIR:galgame>/G0"
-    COMMENT "Copying game data to output directory..."
+        "${CMAKE_SOURCE_DIR}/Story"
+        "$<TARGET_FILE_DIR:galgame>/Story"
+    COMMENT "Copying story data to output directory..."
 )

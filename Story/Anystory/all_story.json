@@ -1,0 +1,256 @@
+{
+  "current_scene": "Story/Anystory/C0",
+  "game_summary": "这是一个关于青春与邂逅的故事...",
+  "game_title": "樱花物语Any",
+  "story": [
+    {
+      "dialogues": [
+        {
+          "background": "bg_school_gate.jpg",
+          "background_music": "",
+          "background_prompt": "anime style, school gate with cherry blossom trees, spring morning, warm sunlight, petals falling, detailed background, high quality",
+          "character": "旁白",
+          "characters": [
+            {
+              "image": "",
+              "image_prompt": "",
+              "motion": "still"
+            }
+          ],
+          "text": "Any春日的早晨，阳光透过樱花树洒落在校园里。作为转学生的你，第一天来到了樱花高中。",
+          "voice": ""
+        },
+        {
+          "background": "bg_school_gate.jpg",
+          "background_music": "",
+          "background_prompt": "",
+          "character": "旁白",
+          "characters": [
+            {
+              "image": "",
+              "image_prompt": "",
+              "motion": "still"
+            }
+          ],
+          "text": "Any校门口，粉色的花瓣随风飘落，空气中弥漫着淡淡的花香。你站在校门前，深吸一口气，感受着新生活的开始。",
+          "voice": ""
+        },
+        {
+          "background": "bg_school_gate.jpg",
+          "background_music": "",
+          "background_prompt": "",
+          "character": "旁白",
+          "characters": [
+            {
+              "image": "",
+              "image_prompt": "",
+              "motion": "still"
+            }
+          ],
+          "text": "这所学校比你想象中更美。百年历史的红砖建筑，被春日的樱花簇拥着，像是一幅画。",
+          "voice": ""
+        },
+        {
+          "background": "bg_school_gate.jpg",
+          "background_music": "",
+          "background_prompt": "",
+          "character": "旁白",
+          "characters": [
+            {
+              "image": "",
+              "image_prompt": "",
+              "motion": "still"
+            }
+          ],
+          "text": "（这里……会是一个新的开始吗？）",
+          "voice": ""
+        },
+        {
+          "background": "bg_school_gate.jpg",
+          "background_music": "",
+          "background_prompt": "",
+          "character": "旁白",
+          "characters": [
+            {
+              "image": "",
+              "image_prompt": "",
+              "motion": "still"
+            }
+          ],
+          "text": "远处传来悠扬的钟声，提醒着你第一节课即将开始。你环顾四周，发现了几个可以去的地方……",
+          "voice": ""
+        }
+      ],
+      "scene_dir": "Story/Anystory",
+      "title": "序章：樱花高中，第一天",
+      "type": "scene"
+    },
+    {
+      "dir": "C0",
+      "text": "走向喷泉广场，那里有个女生在看书",
+      "type": "choice"
+    },
+    {
+      "dialogues": [
+        {
+          "background": "bg_fountain.jpg",
+          "background_music": "",
+          "background_prompt": "",
+          "character": "旁白",
+          "characters": [
+            {
+              "image": "char_sakura_happy.jpg",
+              "image_prompt": "",
+              "motion": "still"
+            }
+          ],
+          "text": "你走向喷泉广场，一个粉色头发的女生正坐在喷泉边看书，樱花花瓣轻轻落在她的发间。",
+          "voice": ""
+        },
+        {
+          "background": "bg_fountain.jpg",
+          "background_music": "",
+          "background_prompt": "",
+          "character": "旁白",
+          "characters": [
+            {
+              "image": "char_sakura_happy.jpg",
+              "image_prompt": "",
+              "motion": "still"
+            }
+          ],
+          "text": "感觉到有人靠近，她抬起头，露出了一个温柔的微笑。",
+          "voice": ""
+        },
+        {
+          "background": "bg_fountain.jpg",
+          "background_music": "",
+          "background_prompt": "",
+          "character": "樱花",
+          "characters": [
+            {
+              "image": "char_sakura_happy.jpg",
+              "image_prompt": "",
+              "motion": "still"
+            }
+          ],
+          "text": "啊，你是新来的转学生吧？我叫樱花，很高兴认识你！",
+          "voice": "16bit_stereo_48KHz.wav"
+        },
+        {
+          "background": "bg_fountain.jpg",
+          "background_music": "",
+          "background_prompt": "",
+          "character": "你",
+          "characters": [
+            {
+              "image": "char_sakura_happy.jpg",
+              "image_prompt": "",
+              "motion": "still"
+            }
+          ],
+          "text": "你好，我是新来的，请多关照。",
+          "voice": ""
+        },
+        {
+          "background": "bg_fountain.jpg",
+          "background_music": "",
+          "background_prompt": "",
+          "character": "樱花",
+          "characters": [
+            {
+              "image": "char_sakura_happy.jpg",
+              "image_prompt": "",
+              "motion": "still"
+            }
+          ],
+          "text": "这所学校很漂亮吧？特别是春天的时候，到处都是樱花，美极了！",
+          "voice": "16bit_stereo_48KHz.wav"
+        },
+        {
+          "background": "bg_fountain.jpg",
+          "background_music": "",
+          "background_prompt": "",
+          "character": "旁白",
+          "characters": [
+            {
+              "image": "char_sakura_happy.jpg",
+              "image_prompt": "",
+              "motion": "still"
+            },
+            {
+              "image": "char_honey_happy.png",
+              "image_prompt": "",
+              "motion": "move_right"
+            }
+          ],
+          "text": "就在这时，一个活泼的女生从远处跑来，扎着双马尾，笑容灿烂。",
+          "voice": ""
+        },
+        {
+          "background": "bg_fountain.jpg",
+          "background_music": "",
+          "background_prompt": "",
+          "character": "蜜",
+          "characters": [
+            {
+              "image": "char_sakura_happy.jpg",
+              "image_prompt": "",
+              "motion": "still"
+            },
+            {
+              "image": "char_honey_happy.png",
+              "image_prompt": "",
+              "motion": "bounce"
+            }
+          ],
+          "text": "樱花！你在这里啊！这位是……新同学？",
+          "voice": ""
+        },
+        {
+          "background": "bg_fountain.jpg",
+          "background_music": "",
+          "background_prompt": "",
+          "character": "樱花",
+          "characters": [
+            {
+              "image": "char_sakura_happy.jpg",
+              "image_prompt": "",
+              "motion": "flip"
+            },
+            {
+              "image": "char_honey_happy.png",
+              "image_prompt": "",
+              "motion": "still"
+            }
+          ],
+          "text": "对，这是刚转来的同学。这位是我的好朋友，蜜！",
+          "voice": "16bit_stereo_48KHz.wav"
+        },
+        {
+          "background": "bg_fountain.jpg",
+          "background_music": "",
+          "background_prompt": "",
+          "character": "蜜",
+          "characters": [
+            {
+              "image": "char_sakura_happy.jpg",
+              "image_prompt": "",
+              "motion": "still"
+            },
+            {
+              "image": "char_honey_happy.png",
+              "image_prompt": "",
+              "motion": "bounce"
+            }
+          ],
+          "text": "你好你好！我叫蜜，是樱花的死党！欢迎来到樱花高中！",
+          "voice": ""
+        }
+      ],
+      "scene_dir": "Story/Anystory/C0",
+      "title": "喷泉广场的邂逅",
+      "type": "scene"
+    }
+  ]
+}
