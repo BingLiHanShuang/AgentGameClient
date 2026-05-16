@@ -1,0 +1,76 @@
+{
+  "title": "图书馆的午后",
+  "dialogues": [
+    {
+      "character": "旁白",
+      "text": "你走进图书馆，里面安静而整洁，书香气息扑面而来。",
+      "background": "image-back/bg_library.jpg",
+      "background_prompt": "",
+      "voice": "",
+      "characters": [
+        {
+          "image": "",
+          "image_prompt": "",
+          "motion": "still"
+        }
+      ]
+    },
+    {
+      "character": "旁白",
+      "text": "你找了一本关于这所学校历史的书，坐在靠窗的位置静静地阅读起来。窗外，樱花花瓣随风飘落。",
+      "background": "image-back/bg_library.jpg",
+      "background_prompt": "",
+      "voice": "",
+      "characters": [
+        {
+          "image": "",
+          "image_prompt": "",
+          "motion": "still"
+        }
+      ]
+    },
+    {
+      "character": "旁白",
+      "text": "书中记载，这所学校已有百年历史，培养了无数优秀的学生。你心中涌起一股莫名的感动。",
+      "background": "image-back/bg_library.jpg",
+      "background_prompt": "",
+      "voice": "",
+      "characters": [
+        {
+          "image": "",
+          "image_prompt": "",
+          "motion": "still"
+        }
+      ]
+    },
+    {
+      "character": "旁白",
+      "text": "就这样，你度过了一个平静而充实的早晨。在这所充满历史的学校里，你的故事也将慢慢展开。",
+      "background": "image-back/bg_library.jpg",
+      "background_prompt": "",
+      "voice": "",
+      "characters": [
+        {
+          "image": "",
+          "image_prompt": "",
+          "motion": "still"
+        }
+      ]
+    },
+    {
+      "character": "旁白",
+      "text": "——【独自结局 END】——",
+      "background": "image-back/bg_library.jpg",
+      "background_prompt": "",
+      "voice": "",
+      "characters": [
+        {
+          "image": "",
+          "image_prompt": "",
+          "motion": "still"
+        }
+      ]
+    }
+  ],
+  "choices": []
+}

@@ -1,0 +1,20 @@
+{
+  "images": [
+    {
+      "name": "bg_school_gate.jpg",
+      "prompt": "anime style, school gate with cherry blossom trees, spring morning, warm sunlight, petals falling, detailed background, high quality"
+    },
+    {
+      "name": "bg_fountain.jpg",
+      "prompt": ""
+    },
+    {
+      "name": "bg_library.jpg",
+      "prompt": "anime style, school library interior, tall bookshelves, warm lighting, quiet atmosphere, wooden tables, window with cherry blossom view, detailed background, high quality"
+    },
+    {
+      "name": "bg_classroom.jpg",
+      "prompt": "anime style, high school classroom, rows of desks and chairs, window with cherry blossom view, morning light streaming in, detailed background, high quality"
+    }
+  ]
+}

@@ -1,0 +1,86 @@
+{
+  "title": "图书馆的下午",
+  "dialogues": [
+    {
+      "character": "樱花",
+      "text": "图书馆？好啊！那里有好多关于这所学校历史的书，我最喜欢去了！",
+      "background": "bg_library.png",
+      "background_prompt": "anime style, school library interior, tall bookshelves, warm lighting, quiet atmosphere, wooden tables, window with cherry blossom view, detailed background, high quality",
+      "voice": "",
+      "background_music": "",
+      "characters": [
+        {
+          "image": "char_sakura_happy.jpg",
+          "image_prompt": "",
+          "motion": "still"
+        }
+      ]
+    },
+    {
+      "character": "旁白",
+      "text": "午休时间，你们来到了图书馆。阳光透过高大的书架间隙洒落，空气中弥漫着书香。",
+      "background": "bg_library.png",
+      "background_prompt": "",
+      "voice": "",
+      "background_music": "",
+      "characters": [
+        {
+          "image": "char_sakura_happy.jpg",
+          "image_prompt": "",
+          "motion": "still"
+        }
+      ]
+    },
+    {
+      "character": "樱花",
+      "text": "我最喜欢看诗集！特别是描写四季的那种……（小声）其实我自己也在写……",
+      "background": "bg_library.png",
+      "background_prompt": "",
+      "voice": "",
+      "background_music": "",
+      "characters": [
+        {
+          "image": "char_sakura_happy.jpg",
+          "image_prompt": "",
+          "motion": "still"
+        }
+      ]
+    },
+    {
+      "character": "旁白",
+      "text": "离开时，樱花在你的笔记本扉页上写下了一行字——「春日相逢，愿此后岁月皆如樱花般美好。」",
+      "background": "bg_library.png",
+      "background_prompt": "",
+      "voice": "",
+      "background_music": "",
+      "characters": [
+        {
+          "image": "char_sakura_happy.jpg",
+          "image_prompt": "",
+          "motion": "still"
+        }
+      ]
+    },
+    {
+      "character": "旁白",
+      "text": "第二天，你发现自己不由自主地又走向了图书馆……",
+      "background": "bg_library.png",
+      "background_prompt": "",
+      "voice": "",
+      "background_music": "",
+      "characters": [
+        {
+          "image": "",
+          "image_prompt": "",
+          "motion": "still"
+        }
+      ]
+    }
+  ],
+  "choices": [
+    {
+      "text": "「樱花，你今天也在这里啊。」",
+      "dir": "C0C0C0C0"
+    }
+  ]
+}
