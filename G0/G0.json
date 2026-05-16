@@ -2,14 +2,14 @@
   "game_title": "樱花物语",
   "game_subtitle": "- 一个关于青春与邂逅的故事 -",
   "game_summary": "这是一个关于青春与邂逅的故事...",
-  "title_background": "G0/image-back/bg_school_gate.jpg",
+  "title_background": "bg_school_gate.jpg",
   "title_background_prompt": "anime style, school gate with cherry blossom trees, spring morning, warm sunlight, petals falling, detailed background, high quality",
   "title": "序章：樱花高中，第一天",
   "dialogues": [
     {
       "character": "旁白",
       "text": "春日的早晨，阳光透过樱花树洒落在校园里。作为转学生的你，第一天来到了樱花高中。",
-      "background": "G0/image-back/bg_school_gate.jpg",
+      "background": "bg_school_gate.jpg",
       "background_prompt": "anime style, school gate with cherry blossom trees, spring morning, warm sunlight, petals falling, detailed background, high quality",
       "voice": "",
       "background_music": "",
@@ -24,7 +24,7 @@
     {
       "character": "旁白",
       "text": "校门口，粉色的花瓣随风飘落，空气中弥漫着淡淡的花香。你站在校门前，深吸一口气，感受着新生活的开始。",
-      "background": "G0/image-back/bg_school_gate.jpg",
+      "background": "bg_school_gate.jpg",
       "background_prompt": "",
       "voice": "",
       "background_music": "",
@@ -39,7 +39,7 @@
     {
       "character": "旁白",
       "text": "这所学校比你想象中更美。百年历史的红砖建筑，被春日的樱花簇拥着，像是一幅画。",
-      "background": "G0/image-back/bg_school_gate.jpg",
+      "background": "bg_school_gate.jpg",
       "background_prompt": "",
       "voice": "",
       "background_music": "",
@@ -54,7 +54,7 @@
     {
       "character": "旁白",
       "text": "（这里……会是一个新的开始吗？）",
-      "background": "G0/image-back/bg_school_gate.jpg",
+      "background": "bg_school_gate.jpg",
       "background_prompt": "",
       "voice": "",
       "background_music": "",
@@ -69,7 +69,7 @@
     {
       "character": "旁白",
       "text": "远处传来悠扬的钟声，提醒着你第一节课即将开始。你环顾四周，发现了几个可以去的地方……",
-      "background": "G0/image-back/bg_school_gate.jpg",
+      "background": "bg_school_gate.jpg",
       "background_prompt": "",
       "voice": "",
       "background_music": "",

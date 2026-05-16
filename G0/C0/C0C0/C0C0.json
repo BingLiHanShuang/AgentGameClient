@@ -4,13 +4,13 @@
     {
       "character": "你",
       "text": "嗯，这里的环境真的很美，特别是这些樱花树。",
-      "background": "G0/image-back/bg_fountain.jpg",
+      "background": "bg_fountain.jpg",
       "background_prompt": "",
       "voice": "",
       "background_music": "",
       "characters": [
         {
-          "image": "G0/image-person/char_sakura_happy.jpg",
+          "image": "char_sakura_happy.jpg",
           "image_prompt": "",
           "motion": "still"
         }
@@ -19,13 +19,13 @@
     {
       "character": "樱花",
       "text": "对吧！每年春天我都会来这里看书，这是我最喜欢的地方。",
-      "background": "G0/image-back/bg_fountain.jpg",
+      "background": "bg_fountain.jpg",
       "background_prompt": "",
-      "voice": "G0/audio-person/16bit_stereo_48KHz.wav",
-      "background_music": "G0/audio-back/output_custom_voice_2.wav",
+      "voice": "16bit_stereo_48KHz.wav",
+      "background_music": "output_custom_voice_2.wav",
       "characters": [
         {
-          "image": "G0/image-person/char_sakura_happy.jpg",
+          "image": "char_sakura_happy.jpg",
           "image_prompt": "",
           "motion": "still"
         }
@@ -34,13 +34,13 @@
     {
       "character": "旁白",
       "text": "你们聊了很久，从学校聊到了各自的兴趣爱好。不知不觉间，上课铃声响起。",
-      "background": "G0/image-back/bg_fountain.jpg",
+      "background": "bg_fountain.jpg",
       "background_prompt": "",
       "voice": "",
-      "background_music": "G0/audio-back/output_custom_voice_2.wav",
+      "background_music": "output_custom_voice_2.wav",
       "characters": [
         {
-          "image": "G0/image-person/char_sakura_happy.jpg",
+          "image": "char_sakura_happy.jpg",
           "image_prompt": "",
           "motion": "still"
         }
@@ -49,13 +49,13 @@
     {
       "character": "樱花",
       "text": "啊，要迟到了！我们快去教室吧！",
-      "background": "G0/image-back/bg_fountain.jpg",
+      "background": "bg_fountain.jpg",
       "background_prompt": "",
-      "voice": "G0/audio-person/voice_design.wav",
+      "voice": "voice_design.wav",
       "background_music": "",
       "characters": [
         {
-          "image": "G0/image-person/char_sakura_happy.jpg",
+          "image": "char_sakura_happy.jpg",
           "image_prompt": "",
           "motion": "still"
         }
@@ -64,13 +64,13 @@
     {
       "character": "旁白",
       "text": "你们一起跑向教室。巧合的是，樱花和你竟然在同一个班。她把你带到一个靠窗的空位旁，笑着说——",
-      "background": "G0/image-back/bg_classroom.png",
+      "background": "bg_classroom.png",
       "background_prompt": "anime style, high school classroom, rows of desks and chairs, window with cherry blossom view, morning light streaming in, detailed background, high quality",
       "voice": "",
       "background_music": "",
       "characters": [
         {
-          "image": "G0/image-person/char_sakura_happy.jpg",
+          "image": "char_sakura_happy.jpg",
           "image_prompt": "",
           "motion": "still"
         }
@@ -79,13 +79,13 @@
     {
       "character": "樱花",
       "text": "这里！坐我旁边吧，这样我可以帮你熟悉学校的事情。",
-      "background": "G0/image-back/bg_classroom.png",
+      "background": "bg_classroom.png",
       "background_prompt": "",
       "voice": "",
       "background_music": "",
       "characters": [
         {
-          "image": "G0/image-person/char_sakura_happy.jpg",
+          "image": "char_sakura_happy.jpg",
           "image_prompt": "",
           "motion": "still"
         }
@@ -94,13 +94,13 @@
     {
       "character": "旁白",
       "text": "一整个上午，樱花都在悄悄帮你解答各种疑问。午休铃声响起，她转过头来，眼睛亮亮的……",
-      "background": "G0/image-back/bg_classroom.png",
+      "background": "bg_classroom.png",
       "background_prompt": "",
       "voice": "",
       "background_music": "",
       "characters": [
         {
-          "image": "G0/image-person/char_sakura_happy.jpg",
+          "image": "char_sakura_happy.jpg",
           "image_prompt": "",
           "motion": "still"
         }

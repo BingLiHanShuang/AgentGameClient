@@ -4,7 +4,7 @@
 
 ---
 
-## 目录结构
+## 目录结构（严格遵循）
 
 ```
 AgentGame/
@@ -17,45 +17,32 @@ AgentGame/
 ├── third_party/
 │   └── nlohmann/json.hpp       # JSON 解析库（单头文件）
 │
-├── G0/                         # 游戏根目录（示例：樱花物语）
-│   ├── G0.json                 # 开场剧情（含 game_title 字段）
-│   ├── all_story.json          # 自动生成的存档文件
-│   ├── image-back/             # 背景图目录
-│   │   ├── images.json         # 背景图名称与 AI 提示词
-│   │   └── *.jpg / *.png       # 背景图文件
-│   ├── image-person/           # 人物立绘目录
-│   │   ├── images.json         # 立绘名称与 AI 提示词
-│   │   └── *.jpg / *.png       # 立绘文件
-│   ├── audio-back/             # 背景音乐目录
-│   │   └── *.mp3 / *.ogg       # 背景音乐文件
-│   ├── audio-person/           # 人声音频目录
-│   │   └── *.wav / *.mp3       # 人声文件
-│   ├── C0/                     # 选项 0 分支
-│   │   ├── C0.json             # 分支剧情
-│   │   ├── C0C0/               # 子选项 0
-│   │   └── C0C1/               # 子选项 1
-│   ├── C1/                     # 选项 1 分支
-│   └── C2/                     # 选项 2 分支
-│
-└── G0-example/                 # 示例游戏目录（展示所有功能）
-    ├── G0-example.json         # 示例开场场景
+└── G0/                         # 游戏根目录（示例：樱花物语）
+    │── G0.json                 # 开场剧情（含 game_title 字段）
+    ├── all_story.json          # 自动生成的存档文件
+    ├── image-back/             # 背景图目录
+    │   ├── images.json         # 储存所有背景图名称与 AI 提示词
+    │   └── *.png               # 背景图文件
+    ├── image-person/           # 人物立绘目录
+    │   ├── images.json         # 储存所有人物立绘名称与 AI 提示词
+    │   └── *.png               # 立绘文件
+    ├── audio-back/             # 背景音乐目录
+    │   └── *.wav               # 背景音乐文件
+    ├── audio-person/           # 人声音频目录
+    │   └── *.wav               # 人声文件
     ├── C0/                     # 选项 0 分支
-    │   └── C0.json
+    │   ├── C0.json             # 分支剧情
+    │   ├── C0C0/               # 子选项 0
+    │   └── C0C1/               # 子选项 1
     ├── C1/                     # 选项 1 分支
-    │   └── C1.json
-    ├── image-back/
-    │   └── images.json
-    ├── image-person/
-    │   └── images.json
-    ├── audio-back/             # 背景音乐（放置 .mp3/.ogg 文件）
-    └── audio-person/           # 人声音频（放置 .wav/.mp3 文件）
+    └── C2/                     # 选项 2 分支
 ```
 
 > **注意**：`image-back/`、`image-person/`、`audio-back/`、`audio-person/` 均位于游戏根目录（如 `G0/`）内部，与该游戏绑定。
 
 ---
 
-## 场景 JSON 格式
+## 场景 JSON 格式（严格遵循）
 
 **开场剧情**目录下有一个与目录同名的 `.json` 文件：
 
@@ -64,32 +51,32 @@ AgentGame/
   "game_title": "游戏标题（仅根最外层 JSON 需要）",
   "game_subtitle": "副标题（显示在标题下方，可留空）",
   "game_summary": "这是一个关于青春与邂逅的故事...",
-  "title_background": "G0/image-back/bg_title.png（标题界面背景图，可留空）",
-  "title_background_prompt": "标题界面背景图AI 提示词，可留空",
+  "title_background": "bg_title.png（标题界面背景图）",
+  "title_background_prompt": "参考下文：AI 提示词规则",
   "title": "场景标题",
   "dialogues": [
     {
       "character": "角色名（空字符串表示旁白）",
-      "text": "对话文本",
+      "text": "对话文本（参考下文：对话文本规则）",
 
-      "background": "G0/image-back/bg_place_time.png（比如bg_school_night.png）",
-      "background_prompt": "若G0/image-back/bg_place_time.png未生成，填写详细的 AI 提示词；已生成则留空",
+      "background": "bg_place_time.png（命名规则必须是bg_地点_时间.png，比如bg_school_night.png）",
+      "background_prompt": "参考下文：AI 提示词规则",
 
       "characters": [
         {
-          "image": "G0/image-person/char_a_expression_action.png（当前场景人物a的立绘，比如char_a_happy_jump.png）",
-          "image_prompt": "若G0/image-person/char_a_xxx.png未生成，填写详细的 AI 提示词；已生成则留空",
+          "image": "char_a_expression_action.png（当前场景人物a的单人立绘，命名规则必须是char_人物_表情_动作.png，比如char_a_happy_jump.png）",
+          "image_prompt": "参考下文：AI 提示词规则",
           "motion": "still（当前立绘动画）"
         },
         {
-          "image": "G0/image-person/char_b_expression_action.png（可选，当前场景人物b的立绘，比如char_b_happy_jump.png）",
-          "image_prompt": "若G0/image-person/char_b_xxx.png未生成，填写详细的 AI 提示词；已生成则留空",
+          "image": "char_b_expression_action.png（可选，当前场景人物b的单人立绘，命名规则必须是char_人物_表情_动作.png，比如char_b_happy_jump.png）",
+          "image_prompt": "参考下文：AI 提示词规则",
           "motion": "bounce（当前立绘动画）"
         }
       ],
 
-      "voice": "G0/audio-person/voice_xxx_xxx.wav（当前说话人与对话文本，比如voice_a_对话文本.wav）",
-      "background_music": "G0/audio-back/bgm_xxx.wav（当前环境BGM，比如bgm_beauty.wav）"
+      "voice": "voice_xxx_xxx.wav（当前说话人与对话文本，必须是wav文件，比如voice_a_对话文本.wav）",
+      "background_music": "bgm_xxx.wav（当前环境BGM，必须是wav文件，比如bgm_beauty.wav）"
     }
   ],
   "choices": [
@@ -109,26 +96,26 @@ AgentGame/
   "dialogues": [
     {
       "character": "角色名（空字符串表示旁白）",
-      "text": "对话文本",
+      "text": "对话文本（参考下文：对话文本规则）",
 
-      "background": "G0/image-back/bg_place_time.png（比如bg_school_night.png）",
-      "background_prompt": "若G0/image-back/bg_place_time.png未生成，填写详细的 AI 提示词；已生成则留空",
+      "background": "bg_place_time.png（命名规则必须是bg_地点_时间.png，比如bg_school_night.png）",
+      "background_prompt": "参考下文：AI 提示词规则",
 
       "characters": [
         {
-          "image": "G0/image-person/char_a_expression_action.png（当前场景人物a的立绘，比如char_a_happy_jump.png）",
-          "image_prompt": "若G0/image-person/char_a_xxx.png未生成，填写详细的 AI 提示词；已生成则留空",
+          "image": "char_a_expression_action.png（当前场景人物a的单人立绘，命名规则必须是char_人物_表情_动作.png，比如char_a_happy_jump.png）",
+          "image_prompt": "参考下文：AI 提示词规则",
           "motion": "still（当前立绘动画）"
         },
         {
-          "image": "G0/image-person/char_b_expression_action.png（可选，当前场景人物b的立绘，比如char_b_happy_jump.png）",
-          "image_prompt": "若G0/image-person/char_b_xxx.png未生成，填写详细的 AI 提示词；已生成则留空",
+          "image": "char_b_expression_action.png（可选，当前场景人物b的单人立绘，命名规则必须是char_人物_表情_动作.png，比如char_b_happy_jump.png）",
+          "image_prompt": "参考下文：AI 提示词规则",
           "motion": "bounce（当前立绘动画）"
         }
       ],
 
-      "voice": "G0/audio-person/voice_xxx_xxx.wav（当前说话人与对话文本，比如voice_a_对话文本.wav）",
-      "background_music": "G0/audio-back/bgm_xxx.wav（当前环境BGM，比如bgm_beauty.wav）"
+      "voice": "voice_xxx_xxx.wav（当前说话人与对话文本，必须是wav文件，比如voice_a_对话文本.wav）",
+      "background_music": "bgm_xxx.wav（当前环境BGM，必须是wav文件，比如bgm_beauty.wav）"
     }
   ],
   "choices": [
@@ -148,38 +135,33 @@ AgentGame/
   "dialogues": [
     {
       "character": "角色名（空字符串表示旁白）",
-      "text": "对话文本",
+      "text": "对话文本（参考下文：对话文本规则）",
 
-      "background": "G0/image-back/bg_place_time.png（比如bg_school_night.png）",
-      "background_prompt": "若G0/image-back/bg_place_time.png未生成，填写详细的 AI 提示词；已生成则留空",
+      "background": "bg_place_time.png（命名规则必须是bg_地点_时间.png，比如bg_school_night.png）",
+      "background_prompt": "参考下文：AI 提示词规则",
 
       "characters": [
         {
-          "image": "G0/image-person/char_a_expression_action.png（当前场景人物a的立绘，比如char_a_happy_jump.png）",
-          "image_prompt": "若G0/image-person/char_a_xxx.png未生成，填写详细的 AI 提示词；已生成则留空",
+          "image": "char_a_expression_action.png（当前场景人物a的单人立绘，命名规则必须是char_人物_表情_动作.png，比如char_a_happy_jump.png）",
+          "image_prompt": "参考下文：AI 提示词规则",
           "motion": "still（当前立绘动画）"
         },
         {
-          "image": "G0/image-person/char_b_expression_action.png（可选，当前场景人物b的立绘，比如char_b_happy_jump.png）",
-          "image_prompt": "若G0/image-person/char_b_xxx.png未生成，填写详细的 AI 提示词；已生成则留空",
+          "image": "char_b_expression_action.png（可选，当前场景人物b的单人立绘，命名规则必须是char_人物_表情_动作.png，比如char_b_happy_jump.png）",
+          "image_prompt": "参考下文：AI 提示词规则",
           "motion": "bounce（当前立绘动画）"
         }
       ],
 
-      "voice": "G0/audio-person/voice_xxx_xxx.wav（当前说话人与对话文本，比如voice_a_对话文本.wav）",
-      "background_music": "G0/audio-back/bgm_xxx.wav（当前环境BGM，比如bgm_beauty.wav）"
+      "voice": "voice_xxx_xxx.wav（当前说话人与对话文本，必须是wav文件，比如voice_a_对话文本.wav）",
+      "background_music": "bgm_xxx.wav（当前环境BGM，必须是wav文件，比如bgm_beauty.wav）"
     }
   ],
   "choices": [],
-  "ending_background": "结束界面背景图，可留空，仅choices为空的 JSON 需要",
-  "ending_background_prompt": "结束界面背景图AI 提示词，可留空，仅choices为空的 JSON 需要"
+  "ending_background": "bg_place_time.png（命名规则必须是bg_地点_时间.png，比如bg_school_night.png，结束界面背景图，仅choices为空的 JSON 需要）",
+  "ending_background_prompt": "参考下文：AI 提示词规则"
 }
 ```
-
-## AI 提示词规则
-
-75 token, 使用()提升权重，使用[]降低权重，提示词中禁止出现图片尺寸，提示词应包括如下几大要素:
-person count(1 girl, 1 boy, 2 boys, 2 girls, 1 other, multiple_girls, ...), character names, rating(general, sensitive, questionable, explicit), general tags, artist, score range based rating(masterpiece), year modifier(modern, recent, newest)
 
 ### 字段说明
 
@@ -188,16 +170,26 @@ person count(1 girl, 1 boy, 2 boys, 2 girls, 1 other, multiple_girls, ...), char
 | `character` | ✓ | 说话角色名，空字符串表示旁白 |
 | `text` | ✓ | 对话文本 |
 | `background` | ✓ | 背景图路径（相对于可执行文件目录） |
-| `background_prompt` | 可选 | 背景图 AI 生成提示词（图片未生成时填写） |
-| `characters` | ✓ | **多人物立绘数组**（支持单人，优先于 character_image） |
-| `voice` | 可选 | 人声音频路径（不循环，对话结束自动停止） |
-| `background_music` | 可选 | 背景音乐路径（循环播放） |
+| `background_prompt` | ✓ | 背景图 AI 生成提示词（参考上文**AI 提示词规则**） |
+| `characters` | ✓ | **多人物立绘数组**（支持单人），**无人场景时键值可为[]** |
+| `voice` | ✓ | 人声音频路径（不循环，对话结束自动停止），键值可为"" |
+| `background_music` | ✓ | 背景音乐路径（循环播放），键值可为"" |
 
-- `choices` 为空数组时，该场景为结局，游戏结束后返回标题界面。
-- 若某段对话未指定 `character_image`，保持上一段的立绘不变。
+- `choices` 为空数组时，该场景为分支结局，游戏结束后返回标题界面。
 - 若某段对话未指定 `background`，保持上一段的背景不变。
 
 ---
+
+## 对话文本规则（高优先级）
+
+- 旁白和台词必须**分开**写在`dialogues` 数组中的不同对象中。
+- **禁止换行**。
+
+## AI 提示词规则（高优先级）
+
+- 人物立绘必须是**单人立绘**。
+- json文件中的背景图片如果**同背景、同时间**，人物立绘图片如果**同人物、同表情、同动作**，则复用先前的图片，且该图片的提示词位置**保留键名、键值为""**；否则使用新png图，并针对背景图片、人物立绘撰写**Illustrious模型提示词**。
+- Illustrious模型提示词规则：保持在65-75 token, 使用()提升权重，使用[]降低权重，**人物、背景提示词中禁止出现图片尺寸**。**人物**提示词必须指向单角色，且应包括如下几大要素: person count(1 girl, 1 boy, 1 other, ...), character name, rating(general, sensitive, questionable, explicit), 人物具体特征, artist, score range based rating(masterpiece), year modifier(modern, recent, newest)，示例：1girl, solo, breasts, blue_eyes, black_hair, hair_bun, (hair_ornament:1.2), blue_dress, strapless, off_shoulder, bare_shoulders, collarbone, jewelry, necklace, bracelet, simple_background, closed_mouth, full_body, (front_view:1.2)；**背景**提示词应包括如下几大要素:rating(general, sensitive, questionable, explicit), general tags, artist, score range based rating(masterpiece), year modifier(modern, recent, newest)，示例：cozy bedroom, late morning, sunlight streaming through half-drawn curtains, dust particles dancing in the light beam, messy bed with white sheets, wooden floor, bookshelf filled with books, warm and soft shadows, hazy atmosphere, cinematic lighting, intimate and dreamy mood, slightly surreal, epic warmth, masterpiece, best quality, highly detailed
 
 ## 背景图片规则
 背景图片 wxh 尺寸必须大于等于 1280x720
@@ -208,8 +200,8 @@ person count(1 girl, 1 boy, 2 boys, 2 girls, 1 other, multiple_girls, ...), char
 
 ```json
 "characters": [
-  { "image": "G0/image-person/char_a.png", "image_prompt": "", "motion": "still" },
-  { "image": "G0/image-person/char_b.png", "image_prompt": "", "motion": "bounce" }
+  { "image": "char_a_expression_action.png", "image_prompt": "", "motion": "still" },
+  { "image": "char_b_expression_action.png", "image_prompt": "", "motion": "bounce" }
 ]
 ```
 
@@ -277,9 +269,9 @@ person count(1 girl, 1 boy, 2 boys, 2 girls, 1 other, multiple_girls, ...), char
 
 | 按钮 | 可用条件 | 功能 |
 |------|---------|------|
+| 新游戏 | 始终 | 删除存档，从头开始 |
 | 继续游戏 | 有存档 | 从上次保存的位置继续 |
 | 旅途重温 | 有存档 | 回顾已走过的全部剧情 |
-| 新游戏 | 始终 | 删除存档，从头开始 |
 | 退出游戏 | 始终 | 关闭程序 |
 
 支持鼠标点击、↑↓ 方向键导航 + Enter 确认。
@@ -345,7 +337,7 @@ cmake .. -G "MinGW Makefiles" -DCMAKE_BUILD_TYPE=Release
 cmake --build . -j4
 ```
 
-> 推荐使用 [winlibs.com](https://winlibs.com/) 的 GCC 12.x UCRT 版本。GCC 13+ 与 SFML 3.0 存在兼容问题。
+> 推荐使用 [winlibs.com](https://winlibs.com/) 的 GCC 14.2 UCRT 版本。
 
 ### 复用已下载的 SFML 源码（避免重复下载）
 
