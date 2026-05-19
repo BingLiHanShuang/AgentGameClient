@@ -1,13 +1,13 @@
-# AgentGameClient —— AI Agent Galgame 引擎
+# OpenGalgame —— 基于json文件的Galgame框架，可用 LLM / SDXL / Qwen edit 进行实时图文故事生成
 
-基于 C++17 + SFML 3.0 的轻量级 Galgame 引擎，支持多级分支剧情、多人物立绘动画、语音/背景音乐、存档/继续、旅途重温、**多故事切换**等功能。所有剧情数据均以 JSON 文件定义，无需重新编译即可热更新。建议搭配AgentGameServer使用。
+基于 C++17 + SFML 3.0 的轻量级 Galgame 引擎，支持多级分支剧情、多人物立绘动画、语音/背景音乐、存档/继续、旅途重温、**多故事切换**等功能。所有剧情数据均以 JSON 文件定义，无需重新编译即可热更新。建议搭配 LLM / SDXL / Qwen edit 进行实时图文故事生成。
 
 ---
 
 ## 目录结构（严格遵循）
 
 ```
-AgentGame/
+OpenGalgame/
 ├── CMakeLists.txt              # CMake 构建配置（SFML 3.0 自动下载）
 ├── src/
 │   ├── engine.h                # 引擎头文件
